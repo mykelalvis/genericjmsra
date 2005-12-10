@@ -6,6 +6,16 @@
  content="text/html; charset=iso-8859-1">
 </head>
 <body bgcolor="#ffffff" text="#000000">
+<script>
+// kill "description" h3 bar
+ld = document.getElementById("longdescription");
+for( n=ld.firstChild; n!=null; n=n.nextSibling ) {
+  if(n.nodeType==1 && n.innerHTML=="Description" ) {
+    n.parentNode.removeChild(n);
+    break;
+  }
+}
+</script>
 <h1>Generic Resource Adapter for JMS </h1>
 <p>
 J2EE 1.4 specifies J2EE Connector Architecture 1.5 as the basic
