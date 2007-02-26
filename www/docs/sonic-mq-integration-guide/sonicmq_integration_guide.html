@@ -348,7 +348,8 @@ through
 the Sonic MQ admin console. The console can be started using the
 command MQ7.0/bin/startmc.sh<br>
 <br>
-&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; To verify, use
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; To verify,
+use
 the list command<br>
 </div>
 &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; <big><small><br>
@@ -451,13 +452,13 @@ and jms/inboundXAQCF [for mypool] created in the application server.<br>
 <h3><a class="mozTocH3" name="mozTocId273889"></a>Connector
 connection pool creation</h3>
 #Creates a Connection Pool called mypool and points to XAQCF created in
-IBM MQ<br>
+Sonic MQ<br>
 asadmin create-connector-connection-pool -- raname genericra
 connectiondefinition javax.jms.QueueConnectionFactory
 --transactionsupport&nbsp; XATransaction --property
 ConnectionFactoryJndiName=inboundXAQCF inpool<br>
 #Creates a Connection Pool called mypool2 and points to XATCF created
-in IBM MQ<br>
+in Sonic MQ<br>
 asadmin create-connector-connection-pool -- raname genericra
 connectiondefinition javax.jms.QueueConnectionFactory
 --transactionsupport&nbsp; XATransaction --property
