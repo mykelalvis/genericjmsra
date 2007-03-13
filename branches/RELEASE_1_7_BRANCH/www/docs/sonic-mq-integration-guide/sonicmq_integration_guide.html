@@ -1,0 +1,834 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>Configure_GenericJMSRA_For_SonicMQ</title>
+  <meta http-equiv="content-type"
+ content="text/html; charset=ISO-8859-1">
+  <meta name="author" content="Sivakumar.Thyagarajan@Sun.COM">
+  <meta http-equiv="CONTENT-TYPE" content="text/html; charset=utf-8">
+  <style>
+<!--
+@page { size: 8.27in 11.69in; margin: 0.79in }
+P { margin-bottom: 0.08in }
+--></style>
+</head>
+<body>
+<h1><a class="mozTocH1" name="mozTocId236768"></a>Integrating
+Sun Java System Application Server with Sonic MQ 7.0 using
+Generic Resource Adapter for JMS</h1>
+<span style="font-style: italic;">By&nbsp; Ramesh Parthasarathy, July
+2006</span><br>
+<br>
+More often than not, EAI developers are faced with&nbsp; a situation
+where they have to&nbsp; integrate disparate messaging products with
+transactional
+applications deployed in a Java EE application server. The preferred
+message provider pluggability mechanism in J2EE 1.4 and beyond is,
+using
+the <a href="http://java.sun.com/j2ee/connector/">Connectors
+1.5 architecture</a>, but a lot of messaging providers do
+not bundle Connectors 1.5 compliant resource adapters to help in this
+integration. The situation is worse when the provider does not provider
+an adapter ( even if its not Connection 1.5 based)&nbsp; for the
+application server being used.<br>
+<br>
+The <a href="http://genericjmsra.dev.java.net">Generic
+resource adapter for JMS</a>
+project helps in integrating messaging products with
+J2EE application servers by wrapping their JMS client library in a J2EE
+Connector Architecture 1.5 resource adapter. It has been used to
+integrate different messaging products like Tibco EMS, IBM WebSphere MQ
+and Sun Java
+System Message Queue with the Sun Java System Application
+Server.&nbsp;
+In this article we would
+guide you through the steps for using the Generic Resource Adapter for
+JMS [referred to as 'Generic RA' in the article going forward] to
+integrate Sonic MQ 7.0 with <a
+ href="http://www.sun.com/software/products/appsrvr_pe/index.xml">Sun
+Java
+System Application Server 8.2&nbsp; (SJSAS)</a><br>
+<br>
+Instructions outlined in this article could also be used to integrate
+Sonic MQ 7.0 with <a href="https://glassfish.dev.java.net/">Project
+GlassFish</a> and the <a href="http://java.sun.com/javaee/downloads/">Java
+EE 5 SDK preview/Sun Java System Application Server PE 9&nbsp; </a>versions
+available today.<br>
+<h2>Contents</h2>
+<ul id="mozToc">
+<!--mozToc h1 1 h2 2 h3 3 h4 4 h5 5 h6 6--><li><a href="#mozTocId236768">Integrating
+Sun Java System
+Application Server with Sonic MQ 7.0 using&nbsp;Generic
+Resource
+Adapter for JMS</a>
+    <ul>
+      <li><a href="#mozTocId620360">Article
+Conventions/Assumptions</a></li>
+      <li><a href="#mozTocId608718">Initial
+Setup&nbsp;</a></li>
+      <li><a href="#mozTocId730839">Configuring Sonic MQ administered
+objects</a></li>
+      <li><a href="#mozTocId971952">Configuring the
+Resource Adapter</a></li>
+      <li><a href="#mozTocId725992">Deploying the
+Resource adapter</a></li>
+      <li><a href="#mozTocId890479">Creating
+Connection Factories and Administered Objects in SJSAS</a>
+        <ul>
+          <li><a href="#mozTocId273889">Connector
+connection pool creation</a></li>
+          <li><a href="#mozTocId844086">Connector
+resource creation</a></li>
+          <li><a href="#mozTocId984328">Admin Objects</a></li>
+        </ul>
+      </li>
+      <li><a href="#mozTocId198246">Component
+Deployment descriptors</a></li>
+    </ul>
+  </li>
+</ul>
+<h2><a class="mozTocH2" name="mozTocId620360"></a>Article
+Conventions/Assumptions</h2>
+Through out this article, we have used the asadmin command line
+interface to show all the interactions performed with the application
+server. &nbsp;You could also use the asadmin GUI console to achieve
+the
+same. Similarly this article assumes a *nix based system [Solaris,
+Linux]. &nbsp;If you are using&nbsp;Windows,&nbsp; Replace
+the instructions with Windows equivalents as
+necessary. <br>
+<br>
+Similarly the steps outlined below assume a successful
+installation of Sonic MQ 7.0 ("Typical" installation is assumed, if you
+have done a "custom" installation you might require additional
+configurations). <br>
+<br>
+<br>
+This article also assumes that the Sonic MQ broker and the
+application server are deployed and running on the same physical
+host/machine. If you have the MQ broker running on a different machine
+and need to access it remotely, please refer the Sonic MQ
+documentation for configuration details. The RA configuration and other
+application server related configuration remains unchanged.&nbsp; <br>
+<br>
+While looking at the configuration of the resource-adapter, connector
+connection pool etc. in this article, only a handful of properties,
+relevant for this discussion is covered. Please note that all the
+resource adapter, connection factory and activationspec configuration,
+listed in the Generic RA <a
+ href="https://genericjmsra.dev.java.net/docs/userguide/userguide.html">user
+guide</a> could be used while configuring these objects.<br>
+<br>
+<h2><a class="mozTocH2" name="mozTocId608718"></a>Initial
+Setup&nbsp;</h2>
+The following permissions need to be added to the server.policy and the
+client.policy file to deploy the generic resource adapter and to run
+the client application.<br>
+<ul>
+  <li>Edit the server.policy file in the
+[${appserver-install-dir}/domains/domain1/config/] directory using your
+favourite text editor and add the following line to the default grant
+block.</li>
+</ul>
+<div style="text-align: left; font-style: italic;">&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+permission java.util.logging.LoggingPermission "control";<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; permission
+java.util.PropertyPermission "*",
+"read,write";&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<br>
+</div>
+<ul>
+  <li>Should you use an application client in your application,
+edit
+the application client's client.policy file in the
+[${appserver-install-dir}/lib/appclient/client.policy] directory and
+add the following line to it.</li>
+</ul>
+<span style="font-style: italic;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+permission javax.security.auth.PrivateCredentialPermission
+"javax.resource.spi.security.PasswordCredential * \"*\"","read";</span><br>
+<ul>
+  <li>Modify the domain's classpath to add Sonic MQ 7.0 jars
+located in Sonic MQ installation lib directory. The asadmin GUI could
+be used to
+modify a domain's classpath. Open a browser and type the url of the
+application server admin GUI - http://hostname:adminport. Go to
+Application Server -&gt; JVM Settings -&gt; Path Settings . Add
+an
+entry for the jar files shown below [comma-separated as shown below] in
+the classpath suffix. Restart the application server domain for these
+changes to take
+effect.&nbsp;&nbsp;&nbsp;&nbsp; <br>
+  </li>
+</ul>
+<span style="font-style: italic;">&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;
+&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; /opt/Sonic/MQ7.0/lib/</span>sonic_Client.jar<br>
+<span style="font-style: italic;">&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;
+/opt/Sonic/MQ7.0/lib/mfcontext.jar</span><br style="font-style: italic;">
+<br>
+<br>
+Set the LD_LIBRARY_PATH environment variable to<span
+ style="font-style: italic;"> /opt/Sonic/MQ7.0/lib</span>
+and restart the application server.&nbsp; For example in *NIX
+system,
+based on the choice of your shell. you would type in&nbsp;
+<ul>
+</ul>
+<span style="font-style: italic;">&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; $ export
+LD_LIBRARY_PATH=</span><span style="font-style: italic;">/opt/Sonic/MQ7.0/lib</span><br>
+<br>
+<h2><a class="mozTocH2" name="mozTocId730839"></a>Configuring SonicMQ
+administered objects<br>
+</h2>
+<div style="margin-left: 40px;"><img src="sonic-pic.png" title=""
+ alt="Figure" style="width: 770px; height: 597px;"><br>
+If a "Typical" installation was performed with default values it would
+create a Domain Manager with following values :<br>
+<br>
+Domain "Domain1"<br>
+Management Conatainer "DomainManager"<br>
+Management Broker "MgmtBroker"<br>
+Management Broker Port "2506"<br>
+Messaging Container &lt;hostname of the machine&gt;<br>
+Messaging Broker Name &lt;hostname of the machine&gt;<br>
+Messaging Broker Port "2507"<br>
+<br>
+If your settings are different from the above then additional
+configuration might be required to get the setup working. Please refer
+the Sonic MQ
+documentation for installation details. The following instructions are
+based on the default values.<br>
+</div>
+<br>
+<ul>
+  <li>Note: All artifacts created on the Sonic MQ side and
+the application server side are shown in blue and green respectively in
+the image above.</li>
+"/opt/Sonic" has been considered as the install location of Sonic MQ. <br>
+</ul>
+<ul>
+  <li>&nbsp;Start the Sonic MQ container for the domain "Domain1"<br>
+  </li>
+</ul>
+<div style="margin-left: 40px;"><span style="font-style: italic;">$
+/opt/Sonic/MQ7.0/bin/startcontainer.sh<br>
+</span>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; <br>
+</div>
+<ul>
+  <li>Create the required destinations :</li>
+</ul>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; 3 queue destinations
+have to be created , "inqueue", "outqueue" and the "deadmsgqueue"<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; <br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; The physical destinations can be
+created in one of the 3 ways <br>
+<ol>
+  <ol>
+    <li>Through the sonic mq administration console</li>
+    <li>Using the javascript samples
+(/opt/Sonic/samples/Management/configApi/jsConfigBean).<br>
+    </li>
+    <li>Exceuting the Java-based samples
+(/opt/Sonic/samples/Management/configApi/javaConfigBean).</li>
+  </ol>
+</ol>
+&nbsp;&nbsp;&nbsp; <br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; For e.g the following
+steps have to be perfromed to create a queue "inqueue" in the default <br>
+<ol>
+  <ol>
+    <ol>
+      <li>Go to the folder
+/opt/Sonic/samples/Management/configApi/jsConfigBean and edit the
+CreateQueue.js script. Set the QUEUE_NAME variable ( default would be
+"NewQueue1") to "inqueue". Also comment out the following line in the
+CreateQueue.js <br>
+      </li>
+&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; //queue.setReadExclusive(true)<br>
+This will ensure that the queue does not have exclusive read access.<br>
+      <br>
+      <li>Execute <br>
+      </li>
+    </ol>
+  </ol>
+</ol>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; # ../../../jsRun.sh CreateQueue.js<br>
+<br>
+&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;
+&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; The output of the
+command will be<br>
+<div style="margin-left: 200px;"><small><span
+ style="font-style: italic;">&nbsp;inqueue doesn't exist. Creating it.</span><br
+ style="font-style: italic;">
+<span style="font-style: italic;">Queue: inqueue</span><br
+ style="font-style: italic;">
+<span style="font-style: italic;">&nbsp; Type = AdministrativelyCreated</span><br
+ style="font-style: italic;">
+<span style="font-style: italic;">&nbsp; Global = false</span><br
+ style="font-style: italic;">
+<span style="font-style: italic;">&nbsp; Exclusive = false</span><br
+ style="font-style: italic;">
+<span style="font-style: italic;">&nbsp; Max Size = 1000</span><br
+ style="font-style: italic;">
+<span style="font-style: italic;">&nbsp; Save Threshold = 1536</span><br
+ style="font-style: italic;">
+<span style="font-style: italic;">Queue: inqueue</span><br
+ style="font-style: italic;">
+<span style="font-style: italic;">&nbsp; Type = AdministrativelyCreated</span><br
+ style="font-style: italic;">
+<span style="font-style: italic;">&nbsp; Global = false</span><br
+ style="font-style: italic;">
+<span style="font-style: italic;">&nbsp; Exclusive = false<br>
+</span><span style="font-style: italic;">&nbsp; Max Size = 12345</span><br
+ style="font-style: italic;">
+<span style="font-style: italic;">&nbsp; Save Threshold = 1536</span></small><br>
+</div>
+&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; <br>
+<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; This would create a new physical
+destination called "inqueue".<br>
+<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; Similarly, create the other queues
+(outqueue and deadmsgqueue).&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; <br>
+<br>
+<ul>
+  <li>Create the jndi bindings :</li>
+</ul>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; In our example we would be
+using the internal JNDI object store provided by Sonic MQ. The JNDI
+bindings can be created either using the admin console or using
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp; the
+sample JNDI cli tool that is provided.<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; <br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; # cd
+/opt/Sonic/samples/Management/jndiAPI/java &nbsp;&nbsp; &nbsp;&nbsp; <br>
+<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp; # ../../../Mgmt.sh
+JndiCLI Domain1 tcp://localhost:2506 Administrator Administrator<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; ( above command assumes
+default values, modify if needed)<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &gt; bind qcf
+inboundXAQCF
+ConnectionURLs=tcp://localhost:2506,DefaultUser=Administrator,DefaultPassword=Administrator
+<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; &gt;
+bind qcf outboundXAQCF
+ConnectionURLs=tcp://localhost:2506,DefaultUser=Administrator,DefaultPassword=Administrator
+<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &gt; bind
+queue inqueue inqueue<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &gt; bind
+queue outqueue outqueue<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &gt; bind
+queue deadmsgqueue deadmsgqueue<br>
+<br>
+<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; The above
+steps create the jndi&nbsp; bindings inbound Queue connection factory
+with jndi name "inboundXAQCF", outbound Queue connection factory with
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; jndi name "outboundXAQCF", inbound queue with jndi
+name "inqueue" and outbound queue with jndi name "outqueue, and dmd
+queue with jndi &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; name "deadmsgqueue".<br>
+<br>
+<div style="margin-left: 80px;">&nbsp;&nbsp; &nbsp;&nbsp; The jndiAPI
+does not ( or iam not aware of) allow bindings of
+type XAQueueConnectionFactory, so please change the "Factory Type" of
+inboundXAQCF and&nbsp; outboundXAQCF to "XAQueueConnectionFactory"
+through
+the Sonic MQ admin console. The console can be started using the
+command MQ7.0/bin/startmc.sh<br>
+<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; To verify,
+use
+the list command<br>
+</div>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; <big><small><br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; &gt; list</small>&nbsp;&nbsp;</big><span
+ style="font-style: italic;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span><br>
+<div style="margin-left: 80px;"><br>
+<small><span style="font-style: italic;">testxa:
+progress.message.jclient.QueueConnectionFactory<br>
+inqueue: progress.message.jclient.Queue<br>
+inboundXAQCF: progress.message.jclient.xa.XAQueueConnectionFactory<br>
+outboundXAQCF: progress.message.jclient.xa.XAQueueConnectionFactory<br>
+deadmsgqueue: progress.message.jclient.Queue<br>
+outqueue: progress.message.jclient.Queue<br>
+</span><span style="font-style: italic;"></span></small><br>
+</div>
+&nbsp;&nbsp;&nbsp; <br>
+<div style="margin-left: 80px;">&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; <br>
+&nbsp;&nbsp;&nbsp; <br>
+</div>
+<h2><a class="mozTocH2" name="mozTocId971952"></a>Configuring
+the Resource Adapter</h2>
+<ul>
+  <li>Add ${appserver-install-dir}/bin to your PATH. The asadmin
+CLI
+command can be found at ${appserver-install-dir}/bin. In SJSAS, a
+resource adapter configuration is used to specify the configuration of
+a resource adapter. Use the following command to create a resource
+adapter configuration for genericra, to configure it to work with
+SonicMQ.&nbsp;</li>
+</ul>
+<div style="margin-left: 40px;"><span style="font-style: italic;">asadmin
+create-resource-adapter-config --user &lt;adminname&gt;
+--password
+&lt;admin password&gt; --property <span style="color: rgb(0, 153, 0);">SupportsXA=true:ProviderIntegrationMode=jndi:UserName=Administrator:Password=Administrator:JndiProperties=java.naming.factory.initial\=<br>
+com.sonicsw.jndi.mfcontext.MFContextFactory,java.naming.provider.url\=tcp\://localhost\:2506,com.sonicsw.jndi.mfcontext.domain\=Domain1,<br>
+java.naming.security.principal\=Administrator,java.naming.security.credentials\=Administrator:LogLevel=FINEST"</span></span><span
+ style="font-style: italic;"></span><br style="font-style: italic;">
+</div>
+<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; The security principal and
+credentials are not required if "Security" is disabled in the domain
+Domain1.<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; <br>
+<div style="margin-left: 40px;">A brief description of the
+various properties used in the above command is explained below:<br>
+<span style="font-weight: bold;">SupportsXA</span><br>
+Set the supports distributed transactions attribute to true. The level
+of transactional support the adapter provides -- none, local, or XA --
+depends on the capabilities of the Enterprise Information System [EIS]
+being adapted. If an adapter supports XA transactions and this
+attribute is XA, the application can use distributed transactions to
+coordinate the EIS resource with JDBC and JMS resources.<br>
+<br>
+<span style="font-weight: bold;">ProviderIntegrationMode</span><br>
+Set the integration mode as JNDI. Two integration modes exist in the
+Generic Resource Adapter for JMS. The JNDI mode allows the resource
+adapter to use the administered objects published in the message
+provider's JNDI provider to integrate with the message provider.<br>
+<br>
+<span style="font-weight: bold;">Username and Password</span><br>
+Message provider specific user credentials. [In this case, modify this
+attribute to reflect the SonicMQ username/password]<br>
+<br>
+<span style="font-weight: bold;">JndiProperties</span><br>
+This property [comma-separated list of name-value pairs] specifies JNDI
+provider properties to be used for
+connecting to the JMS provider's JNDI. In our case, we set it to the
+JNDI configuration specified earlier.<br>
+<br>
+</div>
+<h2><a class="mozTocH2" name="mozTocId725992"></a>Deploying
+the Resource adapter</h2>
+<ul>
+  <li>Download the Generic RA bits from the project
+site.&nbsp;With Sun
+Java System Application Server 8.2 Platform Edition, Generic
+RA is available out-of-the-box with the application server and you
+could choose to use the bundled resource adapter as well in the step
+below. </li>
+</ul>
+<ul>
+  <li>Deploy the resource adapter using the asadmin deploy
+command, as shown below.&nbsp;In the image above, see Generic JMS
+RA deployed in the application server.</li>
+</ul>
+<span style="font-style: italic;">&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; $ asadmin deploy --user admin --password
+adminadmin
+&lt;location of the generic resource adapter rar file&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br>
+<h2><a class="mozTocH2" name="mozTocId890479"></a>Creating
+Connection Factories and Administered Objects in SJSAS</h2>
+In order to configure a JMS Connection Factory, using the Generic
+Resource Adapter for JMS, a Connector connection pool and resource
+needs to be created in the application server, as shown below. In the
+image above, see inpool [pointing to Generic JMS RA and QCF]
+and jms/inboundXAQCF [for mypool] created in the application server.<br>
+<br>
+<h3><a class="mozTocH3" name="mozTocId273889"></a>Connector
+connection pool creation</h3>
+#Creates a Connection Pool called mypool and points to XAQCF created in
+Sonic MQ<br>
+asadmin create-connector-connection-pool -- raname genericra
+connectiondefinition javax.jms.QueueConnectionFactory
+--transactionsupport&nbsp; XATransaction --property
+ConnectionFactoryJndiName=inboundXAQCF inpool<br>
+#Creates a Connection Pool called mypool2 and points to XATCF created
+in Sonic MQ<br>
+asadmin create-connector-connection-pool -- raname genericra
+connectiondefinition javax.jms.QueueConnectionFactory
+--transactionsupport&nbsp; XATransaction --property
+ConnectionFactoryJndiName=outboundXAQCF outpool<br>
+<br>
+<h3><a class="mozTocH3" name="mozTocId844086"></a>Connector
+resource creation</h3>
+#Creates a connector resource named jms/MyQCF and
+binds this resource to JNDI for applications to use.<br>
+asadmin create-connector-resource --poolname inpool jms/inboundXAQCF<br>
+<br>
+Note: Though the inbound configuration of the RA happens through the
+activation specification, a pool has to be created to make sure that
+the transaction recovery happens when the application restarts. This is
+because the transaction manager does recovery only for connector
+resources that are registered in domain.xml.<br>
+<br>
+#Creates a connector resource named jms/MyTCF and
+binds this resource to JNDI for applications to use.<br>
+asadmin create-connector-resource --poolname outpool jms/outboundXAQCF<br>
+<br>
+<h3><a class="mozTocH3" name="mozTocId984328"></a>Admin
+Objects</h3>
+For JMS Destination Resources, an administered object needs to be
+created. In the image above, see jms/MyQueue [pointing to Generic JMS
+RA and TQueue] created in the application server.<br>
+#Creates a javax.jms.Queue Administered Object and binds it to
+application server's JNDI tree at
+jms/inqueue and points to inqueue created in Sonic MQ.<br>
+asadmin create-admin-object --raname genericra --restype
+javax.jms.Queue --property DestinationJndiName=inqueue jms/inqueue<br>
+<br>
+#Creates a javax.jms.Topic Administered Object and binds it to
+application server's JNDI tree at
+jms/MyTopic and points to outqueue created in Sonic MQ.<br>
+asadmin create-admin-object --raname genericra --restype
+javax.jms.Topic --property DestinationJndiName=outqueue jms/outqueue<br>
+<h2><a class="mozTocH2" name="mozTocId198246"></a>Component
+Deployment descriptors.<br>
+</h2>
+<br>
+The deployment descriptors need to take into account the resource
+adapter and the connection resources that have been created. A sample
+sun-ejb-jar.xml for a Message Driven Bean that listens to a destination
+called inqueue&nbsp; in SonicMQ, and publishes back reply messages to a
+destination resource named jms/outqueue &nbsp; is shown below.<br>
+<br>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>
+&lt;!DOCTYPE sun-ejb-jar PUBLIC "-//Sun Microsystems, Inc.//DTD
+Application Server 8.1 EJB 2.1//EN"
+"http://www.sun.com/software/appserver/dtds/sun-ejb-jar_2_1-1.dtd"&gt;<br>
+&lt;sun-ejb-jar&gt;<br>
+&nbsp;&nbsp;&nbsp; &lt;enterprise-beans&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;ejb&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;ejb-name&gt;SonicMQTestMDB&lt;/ejb-name&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;jndi-name&gt;SonicMQTestMDB&lt;/jndi-name&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;resource-ref&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;res-ref-name&gt;<span style="color: rgb(0, 0, 0);">jms/outboundXAQCF</span>&lt;/res-ref-name&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;jndi-name&gt;<span style="color: rgb(51, 204, 0);">jms/outboundXAQCF</span>&lt;/jndi-name&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;/resource-ref&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;resource-env-ref&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;resource-env-ref-name&gt;jms/outqueue&lt;/resource-env-ref-name&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;jndi-name&gt;<span style="color: rgb(51, 204, 0);">jms/outqueue</span>&lt;/jndi-name&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;/resource-env-ref&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;bean-pool&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;steady-pool-size&gt;10&lt;/steady-pool-size&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;resize-quantity&gt;2&lt;/resize-quantity&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;max-pool-size&gt;30&lt;/max-pool-size&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;pool-idle-timeout-in-seconds&gt;60&lt;/pool-idle-timeout-in-seconds&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;/bean-pool&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;mdb-resource-adapter&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;resource-adapter-mid&gt;genericra&lt;/resource-adapter-mid&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;activation-config&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;activation-config-property&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;activation-config-property-name&gt;DestinationType&lt;/activation-config-property-name&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;activation-config-property-value&gt;javax.jms.Queue&lt;/activation-config-property-value&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;/activation-config-property&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;activation-config-property&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;activation-config-property-name&gt;MaxPoolSize&lt;/activation-config-property-name&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;activation-config-property-value&gt;30&lt;/activation-config-property-value&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;/activation-config-property&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;activation-config-property&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;activation-config-property-name&gt;RedeliveryAttempts&lt;/activation-config-property-name&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;activation-config-property-value&gt;3&lt;/activation-config-property-value&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;/activation-config-property&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;activation-config-property&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;activation-config-property-name&gt;RedeliveryInterval&lt;/activation-config-property-name&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;activation-config-property-value&gt;1&lt;/activation-config-property-value&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;/activation-config-property&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;activation-config-property&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;activation-config-property-name&gt;ReconnectAttempts&lt;/activation-config-property-name&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;activation-config-property-value&gt;1000&lt;/activation-config-property-value&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;/activation-config-property&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;activation-config-property&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;activation-config-property-name&gt;ReconnectInterval&lt;/activation-config-property-name&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;activation-config-property-value&gt;1&lt;/activation-config-property-value&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;/activation-config-property&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;activation-config-property&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;activation-config-property-name&gt;ConnectionFactoryJndiName&lt;/activation-config-property-name&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;activation-config-property-value&gt;<span
+ style="color: rgb(51, 51, 255);">inboundXAQCF</span>&lt;/activation-config-property-value&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;/activation-config-property&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;activation-config-property&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;activation-config-property-name&gt;DestinationJndiName&lt;/activation-config-property-name&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;activation-config-property-value&gt;<span
+ style="color: rgb(51, 51, 255);">inqueue</span>&lt;/activation-config-property-value&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;/activation-config-property&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;activation-config-property&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;activation-config-property-name&gt;SendBadMessagesToDMD&lt;/activation-config-property-name&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;activation-config-property-value&gt;true&lt;/activation-config-property-value&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;/activation-config-property&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;activation-config-property&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;activation-config-property-name&gt;DeadMessageDestinationType&lt;/activation-config-property-name&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;activation-config-property-value&gt;javax.jms.Queue&lt;/activation-config-property-value&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;/activation-config-property&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;activation-config-property&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;activation-config-property-name&gt;DeadMessageDestinationJndiName&lt;/activation-config-property-name&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;activation-config-property-value&gt;<span
+ style="color: rgb(51, 51, 255);">deadmsgqueue</span>&lt;/activation-config-property-value&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;/activation-config-property&gt;&nbsp;&nbsp; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;activation-config-property&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;activation-config-property-name&gt;DeadMessageConnectionFactoryJndiName&lt;/activation-config-property-name&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;activation-config-property-value&gt;<span
+ style="color: rgb(51, 51, 255);">outboundXAQCF</span>&lt;/activation-config-property-value&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;/activation-config-property&gt; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;activation-config-property&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;activation-config-property-name&gt;EndpointReleaseTimeOut&lt;/activation-config-property-name&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;activation-config-property-value&gt;30&lt;/activation-config-property-value&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;/activation-config-property&gt;<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;/activation-config&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;/mdb-resource-adapter&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/ejb&gt;<br>
+&nbsp;&nbsp;&nbsp; &lt;/enterprise-beans&gt;<br>
+&lt;/sun-ejb-jar&gt;<br>
+<br>
+<br>
+The business logic encoded in Message Driven Bean could then lookup the
+configured QueueConnectionFactory/Destination resource <br>
+to create a connection as shown below.<br>
+<br>
+&nbsp;&nbsp;&nbsp; <small style="font-style: italic;">/**<br>
+&nbsp;&nbsp;&nbsp;&nbsp; * Creates a bean. Required by EJB spec.<br>
+&nbsp;&nbsp;&nbsp;&nbsp; */<br>
+&nbsp;&nbsp;&nbsp; public void ejbCreate() {<br>
+&nbsp;&nbsp; &nbsp;System.out.println("In SonicMQTestBean.ejbCreate()");<br>
+&nbsp;&nbsp;&nbsp; try {<br>
+&nbsp;&nbsp; &nbsp;Context jndiContext = new InitialContext();<br>
+&nbsp;&nbsp;&nbsp; queueConnectionFactory = (QueueConnectionFactory)<br>
+&nbsp;&nbsp;&nbsp;
+jndiContext.lookup("java:comp/env/jms/outboundXAQCF");<br>
+&nbsp;&nbsp;&nbsp; queue = (Queue)jndiContext.lookup("jms/outqueue");<br>
+&nbsp;&nbsp;&nbsp; } catch (Exception e) {<br>
+&nbsp;&nbsp; &nbsp;System.out.println("MESSAGEBEAN.ejbcreate() got
+Exception "+ e.getMessage());<br>
+&nbsp;&nbsp;&nbsp; e.printStackTrace();<br>
+&nbsp;&nbsp;&nbsp; }<br>
+&nbsp;&nbsp; &nbsp;<br>
+&nbsp;&nbsp;&nbsp; }<br>
+<br>
+&nbsp;&nbsp;&nbsp; /**<br>
+&nbsp;&nbsp;&nbsp;&nbsp; * When the queue receives a message, the EJB
+container invokes the &lt;code&gt;onMessage&lt;/code&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp; * method of the message-driven bean. In the
+&lt;code&gt;SonicMQTestBean&lt;/code&gt; class, the<br>
+&nbsp;&nbsp;&nbsp;&nbsp; * &lt;code&gt;onMessage&lt;/code&gt; method
+casts the incoming message to a TextMessage and displays the text.<br>
+&nbsp;&nbsp;&nbsp;&nbsp; * @param inMessage incoming message.<br>
+&nbsp;&nbsp;&nbsp;&nbsp; */<br>
+&nbsp;&nbsp;&nbsp; public void onMessage(Message inMessage) {<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; QueueConnection qconn = null;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; try {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if
+(inMessage instanceof TextMessage) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+TextMessage txtmsg =
+(TextMessage)inMessage;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+if (txtmsg.getText().trim().equals("2"))<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+// if (!txtmsg.getJMSRedelivered()) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+throw new RuntimeException("payload cannot be 2");<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+// }<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+System.out.println("MESSAGE BEAN: Message received:
+index="+txtmsg.getText());<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+qconn = queueConnectionFactory.createQueueConnection();<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+QueueSession qss = qconn.createQueueSession(false,
+Session.AUTO_ACKNOWLEDGE);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+QueueSender sender = qss.createSender(queue);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+TextMessage msg = qss.createTextMessage();<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+msg.setText(txtmsg.getText());<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+sender.send(msg);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+qconn.close();<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }
+else {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+System.out.println("WRONG MESSAGE TYPE received: " +
+inMessage.getClass().getName());<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; } catch (Throwable t) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+t.printStackTrace();<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+mdc.setRollbackOnly();<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; try {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+if (qconn != null)&nbsp; qconn.close();<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+System.out.println("MESSAGE BEAN: Rollback:
+index="+((TextMessage)inMessage).getText());<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }
+catch (Exception e) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+System.out.println("MESSAGE BEAN: Unable to get index property
+because:"+e.getMessage());<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+e.printStackTrace();<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+throw new RuntimeException(t.getMessage());<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }</small>
+<div style="margin-left: 40px;"><small style="font-style: italic;"><br>
+</small><br>
+</div>
+<h2><a name="Resources"></a>Resources</h2>
+<ul>
+  <li>Generic Resource Adapter for JMS community page -
+download/documentation</li>
+  <ul>
+    <li>Community Page <a href="https://genericjmsra.dev.java.net">https://genericjmsra.dev.java.net</a></li>
+    <li>Please use the user/dev mailing lists at the project site
+for all your queries.</li>
+  </ul>
+  <li><span class="pagesubtitle">Generic Resource
+Adapter for JMS user guide</span></li>
+  <ul>
+    <li><span class="pagesubtitle"><a
+ href="https://genericjmsra.dev.java.net/docs/userguide/userguide.html">https://genericjmsra.dev.java.net/docs/userguide/userguide.html</a></span></li>
+  </ul>
+  <li><span class="pagesubtitle">Sun Java System
+Application Server 8.2 Platform Edition</span></li>
+  <ul>
+    <li><span class="pagesubtitle">Features, data
+sheet at <a
+ href="http://www.sun.com/software/products/appsrvr_pe/index.xml">http://www.sun.com/software/products/appsrvr_pe/index.xml</a></span></li>
+    <li><span class="pagesubtitle">Download for free
+from Sun at <a href="http://java.sun.com/j2ee/1.4/download.html">http://java.sun.com/j2ee/1.4/download.html</a></span></li>
+  </ul>
+  <li><a href="http://java.sun.com/javaee/downloads/">Java EE 5 SDK
+preview/Sun Java System Application Server PE 9 beta</a></li>
+  <li>Developing Connectors chapter on&nbsp;<a
+ href="http://docs.sun.com/app/docs/doc/819-4721">Sun Java System
+Application Server Platform Edition 8.2 Developer's Guide</a><font
+ color="red"> </font></li>
+  <ul>
+    <li><a
+ href="http://docs.sun.com/app/docs/doc/819-4721/6n6rrfqlq?a=view">http://docs.sun.com/app/docs/doc/819-4721/6n6rrfqlq?a=view</a></li>
+  </ul>
+  <li>Project GlassFish</li>
+  <ul>
+    <li><a href="http://glassfish.dev.java.net">http://glassfish.dev.java.net</a></li>
+  </ul>
+  <li><span class="pagesubtitle">Sonic MQ 7.0<br>
+    </span></li>
+  <ul style="color: rgb(51, 51, 255);">
+    <li><a href="www.ibm.com/software/integration/wmq/v60/"><big><font
+ size="-1"><big>www.<b>sonic</b>software.com/products/<wbr>documentation/docs</big></font></big></a><br>
+    </li>
+  </ul>
+</ul>
+<span class="pagesubtitle">Thanks to Binod PG and SivaKumar Thyagarajan
+for reviewing this documentation and providing
+feedback.<br>
+</span>
+</body>
+</html>

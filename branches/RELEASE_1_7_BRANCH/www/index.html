@@ -1,0 +1,191 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <style>
+.app H3 {
+clear: none;
+}
+.axial {
+display: none;
+}
+#apphead {
+display: none;
+}
+  </style>
+  <title>Generic Resource Adapter for JMS</title>
+  <meta http-equiv="Content-Type"
+ content="text/html; charset=iso-8859-1">
+</head>
+<body style="color: rgb(0, 0, 0); background-color: rgb(255, 255, 255);">
+<script>
+// kill "description" h3 bar
+ld = document.getElementById("longdescription");
+for( n=ld.firstChild; n!=null; n=n.nextSibling ) {
+if(n.nodeType==1 && n.innerHTML=="Description" ) {
+n.parentNode.removeChild(n);
+break;
+}
+}
+</script>
+<table align="center" border="0" cellpadding="0" cellspacing="0">
+  <tbody>
+    <tr>
+      <td>
+      <h1><font color="green">Generic Resource
+Adapter for JMS </font> </h1>
+      <hr> </td>
+    </tr>
+  </tbody>
+</table>
+<table align="center" border="0" cellpadding="3" cellspacing="2">
+  <tbody>
+    <tr>
+      <th>License</th>
+      <td> <a href="http://www.apache.org/LICENSE.txt">Apache
+Software License</a> </td>
+      <th>Owner(s)</th>
+      <td> <a href="mailto:binod@dev.java.net">binod</a>, <a
+ href="mailto:sivakumart@dev.java.net">sivakumart</a> </td>
+    </tr>
+  </tbody>
+</table>
+<hr>
+<table align="center" border="0" cellpadding="0" cellspacing="0">
+  <tbody>
+    <tr>
+      <td> <i><b> <font color="green">"Now
+integrated with the latest Java EE 5 Application Server at <a
+ href="http://glassfish.dev.java.net">Project GlassFish</a>" </font> </b></i>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<hr>
+J2EE 1.4 specifies J2EE Connector Architecture 1.5 as the basic
+mechanism to integrate JMS providers with J2EE application servers.
+However some JMS provider vendors do not provide a J2EE Connector
+Architecture 1.5 compliant resource adapter to enable such an
+integration. This project helps such JMS providers to integrate with
+J2EE application servers by wrapping their JMS client library in a J2EE
+Connector Architecture 1.5 resource adapter. We hope this resource
+adapter will help to connect any JMS provider with any J2EE application
+server such as <a
+ href="http://www.sun.com/software/products/appsrvr_pe/">Sun
+Java
+System Application Server</a>.
+<br>
+<br>
+<h2>More Information</h2>
+<h3>User guide</h3>
+The <span style="text-decoration: underline;"></span><a
+ href="docs/userguide/userguide.html">technical
+details</a> of the Generic Resource Adapter for JMS is available
+in the
+<a href="docs/userguide/userguide.html">user
+guide</a>.&nbsp; It also contains the configuration steps to
+deploy and
+configure Generic Resource Adapter for JMS in <a
+ href="http://java.sun.com/j2ee/1.4/download.html#sdk">J2EE
+1.4 SDK</a>, <a href="http://glassfish.dev.java.net">Project
+GlassFish</a> or <a
+ href="http://www.sun.com/software/products/appsrvr_pe/">Sun
+Java
+System Application Server 8.1 and above.</a>
+<br>
+<h3>How-to style integration guides</h3>
+The following how-to style integration guides are now available in the
+documents section.&nbsp;<br>
+<ul>
+  <li>A <a
+ href="docs/tibco-genericjmsra-integration-sample-doc/Integrating_Sun_Java_System_Application_Server_with_Tibco_JMS_using_the_Generic_Resource_Adapter_for_JMS.html">guide
+to integrate
+Tibco EMS</a><a
+ href="docs/tibco-genericjmsra-integration-sample-doc/Integrating_Sun_Java_System_Application_Server_with_Tibco_JMS_using_the_Generic_Resource_Adapter_for_JMS.html">
+    </a>with Sun Java System Application Server using Generic
+Resource Adapter for JMS</li>
+  <li>A <a
+ href="docs/websphere-mq-integration-guide/webspheremq_integration_guide.html">guide
+to integrate Websphere MQ 6.0</a> (formerly MQ Series) with Sun
+Java System Application Server using Generic Resource Adapter for JMS</li>
+  <li>A <a href="docs/was-activemq-integration/genericrawithwas.html">guide
+to integrate ActiveMQ</a> with Websphere Application Server using
+Generic Resource Adapter for JMS (by Vinod Jessani)</li>
+  <li>A <a href="docs/BAS66_GENERICRA_GUIDE.pdf">guide to integrate
+OpenJMS and TIBCO JMS</a> with Borland Application Server 6.6 using
+Generic Resource Adapter for JMS (by Subramanian Easwaran)</li>
+  <li>A <a href="docs/JMSClientViaGenericRAinAS8Behaviour_generic.pdf">cookbook
+for connecting to JMS queues from Sun Application Server 8.x</a> via
+the Generic Resource Adapter for JMS (by Donald Forbes)</li>
+  <li>A <a
+ href="docs/sonic-mq-integration-guide/sonicmq_integration_guide.html">guide
+to integrate Sonic MQ 7.0</a> with Sun
+Java System Application Server using Generic Resource Adapter for JMS</li>
+ <li>A <a
+ href="http://weblogs.java.net/blog/rampsarathy/archive/2006/12/configuring_gla.html">guide
+to integrate JBoss Messaging 1.0.1 </a> with GlassFish V2 using Generic Resource Adapter for JMS</li>
+ <li>A <a
+ href="http://weblogs.java.net/blog/rampsarathy/archive/2007/01/glassfish_and_m.html">guide
+to integrate MantaRay Java 2.0.1  </a> with GlassFish V2 using Generic Resource Adapter for JMS</li>
+  <li>Using <a href="docs/redelivery/redelivery.html">message
+redelivery</a> in Generic Resource Adapter for JMS.</li>
+  <li>Configure <a href="docs/topiccluster/loadbalance.html">load
+balancing for topic endpoints</a> in Generic Resource Adapter for JMS.</li>
+  <li><a href="docs/jmxmonitoring/jmxmonitoring.html">Monitoring
+Inbound resources</a> in Generic Resource Adapter for JMS using JMX.<br>
+    <br>
+  </li>
+</ul>
+<h2>Samples</h2>
+A sample application that demonstrates how to integrate
+Tibco EMS to work with Sun Java System Application Server using the
+Generic Resource Adapter for JMS is available in the full bundle. Dont
+forget to read the <a
+ href="docs/tibco-genericjmsra-integration-sample-doc/Integrating_Sun_Java_System_Application_Server_with_Tibco_JMS_using_the_Generic_Resource_Adapter_for_JMS.html">how
+to guide</a> before that.<br>
+<br>
+<h2>Download Version 1.7</h2>
+<span style="font-weight: bold;">NEW (Nov 20<sup>th</sup>,
+2006)&nbsp;</span>
+A binary version that contains <span
+ style="font-family: courier new,courier,monospace;">a .rar</span>
+archive and a <span style="font-family: courier new,courier,monospace;">.jar</span>
+archive is available in the <a
+ href="https://genericjmsra.dev.java.net/servlets/ProjectDocumentList">documents
+and files</a> section, under the <span style="font-style: italic;">"1.7"
+</span>section. This version contains new features like reliable
+message redelivery, load balancing topic endpoints and inbound resource
+monitoring along with documentation. To know what is new in this
+release please
+view the list of <a
+ href="https://genericjmsra.dev.java.net/issues/buglist.cgi?component=genericjmsra&amp;subcomponent=core&amp;issue_status=RESOLVED&amp;target_milestone=1.7">fixed
+bugs</a>.<br>
+<br>
+Previous versions are also made
+available in the <a
+ href="https://genericjmsra.dev.java.net/servlets/ProjectDocumentList">documents
+and files</a> section. <br>
+<span style="font-weight: bold;"></span><br>
+<h2>Want to do more?</h2>
+If you want to check out the source and build the resource adapter
+yourself, please visit this <a href="servlets/ProjectSource">link</a>.
+The source tree also contains instructions to build the resource
+adapter and a set of tests to verify the changes you are making. If you
+have any success/experience in using Generic Resource Adapter
+for JMS in any application server&nbsp;to integrate with any JMS
+provider
+of your choice, please let the <a
+ href="servlets/ProjectMailingListList">users alias</a>/the
+project owners know and
+we would be glad to host your guide here.<br>
+<br>
+Please send any comments to an appropriate mailing list listed <a
+ href="servlets/ProjectMailingListList">here</a> and/or
+participate in
+the <a href="servlets/ProjectForumView">forums</a>.
+<br>
+<br>
+You are welcome to <a href="servlets/ProjectMembershipRequest">contribute</a>
+to this project.<br>
+<br>
+</body>
+</html>
