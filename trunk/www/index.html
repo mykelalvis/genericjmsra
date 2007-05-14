@@ -32,8 +32,52 @@ break;
     <tr>
       <td>
       <h1><font color="green">Generic Resource
-Adapter for JMS </font> </h1>
-      <hr> </td>
+Adapter for JMS&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; <br>
+      </font></h1>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">
+      <h1><font color="green"><small><small><small>&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; <a
+ href="https://genericjmsra.dev.java.net/servlets/ProjectDocumentList?folderID=7432&amp;expandFolder=7432&amp;folderID=0">Download
+v 2.0.a !</a></small></small></small></font>&nbsp;&nbsp; <font
+ color="green"><small><small><small><br>
+      </small></small></small><small><small><small></small></small></small>
+      </font> </h1>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">
+      <h1><font color="green"><small><small><small>&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; <a
+ href="https://genericjmsra.dev.java.net/servlets/ProjectDocumentList?folderID=7430&amp;expandFolder=7430&amp;folderID=0">Download
+v 1.7 Final&nbsp; !</a></small></small></small><span
+ style="text-decoration: underline;"></span> </font></h1>
+      </td>
     </tr>
   </tbody>
 </table>
@@ -74,8 +118,16 @@ server such as <a
 Java
 System Application Server</a>.
 <br>
-<br>
-<h2>More Information</h2>
+<h2>What's new in 2.0 !</h2>
+Some MoM providers do not support the asynchronous message delivery
+model (Chapter 8 JMS 1.1). To use generic jms ra with such providers we
+have introduced the synchronous receive model. This would be useful to
+work with MoM providers like BEA and Oracle AQ. Generic RA can be
+configured to use the Synchronous delivery mode by setting "<span
+ style="font-style: italic;">DeliveryType=Synchronous</span>" when
+creating the resource adapter configuration.<br>
+<h2>More Information<br>
+</h2>
 <h3>User guide</h3>
 The <span style="text-decoration: underline;"></span><a
  href="docs/userguide/userguide.html">technical
@@ -130,6 +182,12 @@ to integrate MantaRay Java 2.0.1 </a> with GlassFish V2 using Generic
 Resource Adapter for JMS</li>
   <li>Using <a href="docs/redelivery/redelivery.html">message
 redelivery</a> in Generic Resource Adapter for JMS.</li>
+  <ul>
+    <li><a
+ href="http://weblogs.java.net/blog/rampsarathy/archive/2007/05/usingmessage.html">Redelivery
+with WSMQ 6.0</a><br>
+    </li>
+  </ul>
   <li>Configure <a href="docs/topiccluster/loadbalance.html">load
 balancing for topic endpoints</a> in Generic Resource Adapter for JMS.</li>
   <li><a href="docs/jmxmonitoring/jmxmonitoring.html">Monitoring
@@ -156,28 +214,11 @@ Generic Resource Adapter for JMS is available in the full bundle. Dont
 forget to read the <a
  href="docs/tibco-genericjmsra-integration-sample-doc/Integrating_Sun_Java_System_Application_Server_with_Tibco_JMS_using_the_Generic_Resource_Adapter_for_JMS.html">how
 to guide</a> before that.<br>
-<br>
-<h2>Download Version 1.7</h2>
-<span style="font-weight: bold;">NEW (Nov 20<sup>th</sup>,
-2006)&nbsp;</span>
-A binary version that contains <span
- style="font-family: courier new,courier,monospace;">a .rar</span>
-archive and a <span style="font-family: courier new,courier,monospace;">.jar</span>
-archive is available in the <a
- href="https://genericjmsra.dev.java.net/servlets/ProjectDocumentList">documents
-and files</a> section, under the <span style="font-style: italic;">"1.7"
-</span>section. This version contains new features like reliable
-message redelivery, load balancing topic endpoints and inbound resource
-monitoring along with documentation. To know what is new in this
-release please
-view the list of <a
- href="https://genericjmsra.dev.java.net/issues/buglist.cgi?component=genericjmsra&amp;subcomponent=core&amp;issue_status=RESOLVED&amp;target_milestone=1.7">fixed
-bugs</a>.<br>
-<br>
-Previous versions are also made
-available in the <a
- href="https://genericjmsra.dev.java.net/servlets/ProjectDocumentList">documents
-and files</a> section. <br>
+<span style="text-decoration: underline;"></span><span
+ style="font-weight: bold;"></span><br>
+<h2>Downloads</h2>
+Releases of generic ra can be downloaded from <a
+ href="docs/Releases.html">here</a><br>
 <span style="font-weight: bold;"></span><br>
 <h2>Want to do more?</h2>
 If you want to check out the source and build the resource adapter
