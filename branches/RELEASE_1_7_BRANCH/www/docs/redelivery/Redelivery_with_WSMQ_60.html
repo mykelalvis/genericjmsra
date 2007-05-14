@@ -1,0 +1,64 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html; charset=ISO-8859-1"
+ http-equiv="content-type">
+  <title>Redelivery with WSMQ 6.0</title>
+  <meta content="Ramesh.Parthasarathy@Sun.COM" name="author">
+</head>
+<body>
+<div style="text-align: center;"><span style="font-weight: bold;">Using
+Message redelivery in Generic JMS RA with WebSphere MQ 6.0</span><br>
+</div>
+<br>
+<a
+ href="https://genericjmsra.dev.java.net/docs/redelivery/redelivery.html">Reliable
+redelivery</a> feature has been available since&nbsp; <a
+ href="https://genericjmsra.dev.java.net/servlets/ProjectDocumentList?folderID=6274&amp;expandFolder=6274&amp;folderID=7431">generic
+ra 1.7</a>. During message redeliveries, a new transaction is started
+by the container every time the MDB endpoint is invoked. Redelivery
+stratergies are implemented based on how this transaction is handled by
+the RA and when the state changes have to be propagated to the resource
+manager of the MoM provider. In the reliable <a
+ href="https://genericjmsra.dev.java.net/docs/redelivery/redelivery.html">redelivery
+stratergy</a>, the transaction was not started (at the resource
+manager) by delaying it until a succesful delivery was performed to the
+MDB endpoint, this ensured that transaction recovery was
+possible.&nbsp; For example if first 2 attempts in delivering the
+message fail and the third attempt succeds and XA1 , XA2 and XA3 are
+the transaction ids that were started by the container, then generic ra
+would ignore XA1 and XA2 use only XA3 to propate the transaction state
+changes to the resource manager. <br>
+But some MoM providers like WSMQ 6.0, expect a transaction to be
+started before the session (ServerSession) run() method is called. The
+delayed XA logic cannot be used in such cases.&nbsp; The transaciton
+has to be started (at the RM end) before the server session is run().
+To accomodate for this, the first transaction that is started by the
+container is stored by the RA and all the subsequent transactions (one
+for each redelivery attempt) that are started by the container are
+ignored. This of course has the disadvantage that transaction recovery
+(of the transaction manager) logic cannot be used here. For example if
+first 2 attempts in delivering the message fail and the
+third attempt succeds and XA1 , XA2 and XA3 are the transaction ids
+that were started by the container, then generic ra would ignore XA2
+and XA3 use only XA1 to propate the transaction state changes to the
+resource manager.<br>
+We would like to use reliable redelivery with MoM providers that allow
+it, at the same time allowing us to fall back to a conservative
+redelivery startergy to work with certain MoM providers like WSMQ
+series. <br>
+In generic ra <a
+ href="https://genericjmsra.dev.java.net/servlets/ProjectDocumentList?folderID=7429&amp;expandFolder=7429&amp;folderID=7431">1.7-final
+</a>a new RA property has been introduced to fall back to the
+conservative redelivery logic, this flag "UseFirstXAForRedelivery" when
+set to true would ensure that redelivery works with WSMQ 6.0 type MoM
+providers. The default value for this property
+""UseFirstXAForRedelivery" will be false, which means that the reliable
+redelivery will be used by default.<br>
+<br>
+Please, remember to set this propery "UseFirstXAForRedelivery" to true
+during "create-resource-adapter-config" when using GRA <a
+ href="https://genericjmsra.dev.java.net/servlets/ProjectDocumentList?folderID=7429&amp;expandFolder=7429&amp;folderID=7431">1.7-final
+</a>and above with&nbsp; WSMQ 6.<br>
+</body>
+</html>
