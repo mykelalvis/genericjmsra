@@ -9,50 +9,44 @@
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
  */
 package com.sun.genericra.inbound;
 
-import com.sun.genericra.AbstractXAResourceType;
-import com.sun.genericra.XAResourceType;
-import com.sun.genericra.util.ExceptionUtils;
-import com.sun.genericra.util.LogUtils;
-
-import java.util.logging.*;
-
 import javax.resource.ResourceException;
-
+import javax.transaction.xa.Xid;
 import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
-import javax.transaction.xa.Xid;
+import java.util.logging.*;
+import com.sun.genericra.util.ExceptionUtils;
+import com.sun.genericra.util.LogUtils;
+import com.sun.genericra.XAResourceType;
+import com.sun.genericra.AbstractXAResourceType;
+
 
 
 /**
  * <code>XAResource</code> wrapper for Generic JMS Connector. This class
  * intercepts all calls to the actual XAResource object of the physical
- * JMS connection and performs corresponding book-keeping tasks in the
+ * JMS connection and performs corresponding book-keeping tasks in the 
  * ManagedConnection representing the physical connection.
- *
+ * 
  *  @todo: This should be a dynamic proxy as well!!
  */
 public class SimpleXAResourceProxy extends AbstractXAResourceType {
-    private static Logger logger;
+    private XAResource xar;
 
-    private Xid startxid = null;
-    boolean endCalled = false;
-    boolean torollback = true;
+    private static Logger logger;
     static {
         logger = LogUtils.getLogger();
     }
 
-    private XAResource xar;
-
     /**
      * Constructor for XAResourceImpl
-     *
+     * 
      * @param xar
      *            <code>XAResource</code>
      * @param mc
@@ -64,7 +58,7 @@ public class SimpleXAResourceProxy extends AbstractXAResourceType {
 
     /**
      * Commit the global transaction specified by xid.
-     *
+     * 
      * @param xid
      *            A global transaction identifier
      * @param onePhase
@@ -72,17 +66,13 @@ public class SimpleXAResourceProxy extends AbstractXAResourceType {
      *            protocol to commit the work done on behalf of xid.
      */
     public void commit(Xid xid, boolean onePhase) throws XAException {
-        debugxid("Commiting Simple inbound transaction ", xid);
-         if (xid == null) {
-            xid = startxid;
-         }
-        _getXAResource().commit(xid, onePhase);        
-        debugxid("Commited Simple inbound transaction ", xid);
+        debug(xid+"COmmitting tx...");
+        _getXAResource().commit(xid, onePhase);
     }
 
     /**
      * Ends the work performed on behalf of a transaction branch.
-     *
+     * 
      * @param xid
      *            A global transaction identifier that is the same as what was
      *            used previously in the start method.
@@ -90,25 +80,14 @@ public class SimpleXAResourceProxy extends AbstractXAResourceType {
      *            One of TMSUCCESS, TMFAIL, or TMSUSPEND
      */
     public void end(Xid xid, int flags) throws XAException {
-        debug("Ending simple inbound transaction " + convertFlag(flags));
-        debugxid("Ending simple inbound transaction ", xid);
-        if (endCalled)
-        {
-            return;
-        }
-                
-         if (xid == null) {
-            xid = startxid;
-        }
-            endCalled = true;
-            _getXAResource().end(xid, flags);        
-            debugxid("Ended simple inbound transaction ", xid);
+        debug(xid+"Ending tx..."+convertFlag(flags));
+        _getXAResource().end(xid, flags);
     }
 
     /**
      * Tell the resource manager to forget about a heuristically completed
      * transaction branch.
-     *
+     * 
      * @param xid
      *            A global transaction identifier
      */
@@ -119,7 +98,7 @@ public class SimpleXAResourceProxy extends AbstractXAResourceType {
     /**
      * Obtain the current transaction timeout value set for this
      * <code>XAResource</code> instance.
-     *
+     * 
      * @return the transaction timeout value in seconds
      */
     public int getTransactionTimeout() throws XAException {
@@ -130,7 +109,7 @@ public class SimpleXAResourceProxy extends AbstractXAResourceType {
      * This method is called to determine if the resource manager instance
      * represented by the target object is the same as the resouce manager
      * instance represented by the parameter xares.
-     *
+     * 
      * @param xares
      *            An <code>XAResource</code> object whose resource manager
      *            instance is to be compared with the resource
@@ -138,28 +117,23 @@ public class SimpleXAResourceProxy extends AbstractXAResourceType {
      */
     public boolean isSameRM(XAResource xares) throws XAException {
         XAResource inxa = xares;
-
         if (xares instanceof XAResourceType) {
             XAResourceType wrapper = (XAResourceType) xares;
             inxa = (XAResource) wrapper.getWrappedObject();
-
-            if (!compare(wrapper)) {
-                debug("isSameRM retursn /compare :" + false);
-
+            if (!compare(wrapper) ) {
+               debug("isSameRM retursn /compare :" + false);
                 return false;
             }
         }
-
-        boolean result = _getXAResource().isSameRM(inxa);
-        debug("isSameRM retursn /compare :" + result);
-
+        boolean result =  _getXAResource().isSameRM(inxa);
+               debug("isSameRM retursn /compare :" + result);
         return result;
     }
 
     /**
      * Ask the resource manager to prepare for a transaction commit of the
      * transaction specified in xid.
-     *
+     * 
      * @param xid
      *            A global transaction identifier
      * @return A value indicating the resource manager's vote on the outcome of
@@ -169,16 +143,13 @@ public class SimpleXAResourceProxy extends AbstractXAResourceType {
      *         in the prepare method.
      */
     public int prepare(Xid xid) throws XAException {
-        debugxid("Preparing simple inbound transaction with ID ", xid);
-         if (xid == null) {
-            xid = startxid;
-        }
+        debug(xid+"Preparing tx...");
         return _getXAResource().prepare(xid);
     }
 
     /**
      * Obtain a list of prepared transaction branches from a resource manager.
-     *
+     * 
      * @param flag
      *            One of TMSTARTRSCAN, TMENDRSCAN, TMNOFLAGS. TMNOFLAGS must be
      *            used when no other flags are set in flags.
@@ -195,26 +166,19 @@ public class SimpleXAResourceProxy extends AbstractXAResourceType {
     /**
      * Inform the resource manager to roll back work done on behalf of a
      * transaction branch
-     *
+     * 
      * @param xid
      *            A global transaction identifier
      */
-    public void rollback(Xid xid) throws XAException {        
-        debugxid("Rolling back simple inbound transaction with ID ", xid);
-        if (xid == null) {
-            xid = startxid;
-        }
-        if (torollback)
-        {
-            _getXAResource().rollback(xid);
-        }        
-        debugxid("Rolled back simple inbound transaction with ID ", xid);
+    public void rollback(Xid xid) throws XAException {
+        debug(xid+"Rolling back tx...");
+        _getXAResource().rollback(xid);
     }
 
     /**
      * Set the current transaction timeout value for this
      * <code>XAResource</code> instance.
-     *
+     * 
      * @param seconds
      *            the transaction timeout value in seconds.
      * @return true if transaction timeout value is set successfully; otherwise
@@ -226,28 +190,21 @@ public class SimpleXAResourceProxy extends AbstractXAResourceType {
 
     /**
      * Start work on behalf of a transaction branch specified in xid.
-     *
+     * 
      * @param xid
      *            A global transaction identifier to be associated with the
      *            resource
      * @return flags One of TMNOFLAGS, TMJOIN, or TMRESUME
      */
     public void start(Xid xid, int flags) throws XAException {
-        debug("Starting tx..." + convertFlag(flags));
-        debugxid("Staring simple inbound transaction ", xid);
-        startxid = xid;
-        _getXAResource().start(xid, flags);        
-        debugxid("Started simple inbound transaction ", xid);
+        debug(xid+"Starting tx..."+convertFlag(flags));
+        _getXAResource().start(xid, flags);
     }
 
     private XAResource _getXAResource() throws XAException {
         return xar;
     }
 
-    public void setToRollback(boolean rb)
-    {
-        torollback = rb;
-    }
     public Object getWrappedObject() {
         return this.xar;
     }
@@ -255,43 +212,23 @@ public class SimpleXAResourceProxy extends AbstractXAResourceType {
     String convertFlag(int i) {
         if (i == XAResource.TMJOIN) {
             return "TMJOIN";
-        }
-
+        } 
         if (i == XAResource.TMNOFLAGS) {
             return "TMNOFLAGS";
-        }
-
+        } 
         if (i == XAResource.TMSUCCESS) {
             return "TMSUCCESS";
-        }
-
+        } 
         if (i == XAResource.TMSUSPEND) {
             return "TMSUSPEND";
-        }
-
+        } 
         if (i == XAResource.TMRESUME) {
             return "TMRESUME";
-        }
-
-        return "" + i;
-    }
-    
-    public void startDelayedXA(){
-          throw new UnsupportedOperationException();
-    }
-    public boolean endCalled() {
-        // nobody will call this method on this class
-         throw new UnsupportedOperationException();
+        } 
+        return ""+i;
     }
     
     void debug(String s) {
-        logger.log(Level.FINEST, "SimpleXAResourceProxy :"  + s);
+        logger.log(Level.FINEST, "Simple XAResourceProxy"+s);
     }
-    
-    void debugxid(String s, Xid xid) {
-        if (logger.getLevel() == Level.FINEST) {
-            logger.log(Level.FINEST, s + printXid(xid));
-        }
-    }
-
 }
