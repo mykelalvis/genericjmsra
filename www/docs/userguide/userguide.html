@@ -3,42 +3,42 @@
 <head>
 
 
-
-
+  
+  
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
 
 
-
-
-
-
+  
+  
+  
+  
   <title>Generic Resource Adapter for JMS</title>
   <meta name="author" content="Binod.Pg@Sun.COM">
   <meta name="author" content="Sivakumar.Thyagarajan@Sun.COM">
 
 
-
-
+  
+  
   <meta http-equiv="CONTENT-TYPE" content="text/html; charset=utf-8">
 
 
-
-
+  
+  
   <meta name="GENERATOR" content="StarOffice 7  (Solaris Sparc)">
 
 
-
-
+  
+  
   <meta name="CREATED" content="20050121;19102200">
 
 
-
-
+  
+  
   <meta name="CHANGED" content="20050425;11285400">
 
 
-
-
+  
+  
   <style>
 	<!--
 		@page { size: 8.27in 11.69in; margin: 0.79in }
@@ -48,28 +48,28 @@
 		H4.cjk { font-family: "Mincho"; font-size: 11pt; font-style: italic }
 		H4.ctl { font-family: "Luxi Sans"; font-size: 11pt; font-style: italic }
 	--></style>
-
-
+  
+  
   <meta http-equiv="CONTENT-TYPE" content="text/html; charset=utf-8">
 
 
-
-
+  
+  
   <meta name="GENERATOR" content="StarOffice 7  (Solaris Sparc)">
 
 
-
-
+  
+  
   <meta name="CREATED" content="20050121;19102200">
 
 
-
-
+  
+  
   <meta name="CHANGED" content="20050411;12564300">
 
 
-
-
+  
+  
   <style>
 	<!--
 		@page { size: 8.27in 11.69in; margin: 0.79in }
@@ -80,28 +80,28 @@
 		H1.ctl { font-family: "Luxi Sans"; font-size: 16pt }
 	-->
 	</style>
-
-
+  
+  
   <meta http-equiv="CONTENT-TYPE" content="text/html; charset=utf-8">
 
 
-
-
+  
+  
   <meta name="GENERATOR" content="StarOffice 7  (Solaris Sparc)">
 
 
-
-
+  
+  
   <meta name="CREATED" content="20050121;19102200">
 
 
-
-
+  
+  
   <meta name="CHANGED" content="20050411;12564300">
 
 
-
-
+  
+  
   <style>
 	<!--
 		@page { size: 8.27in 11.69in; margin: 0.79in }
@@ -175,8 +175,8 @@ use Generic Resource Adapter for JMS.<br>
 
 
   <li><a href="#mozTocId87001">Technical Architecture</a>
-
-
+    
+    
     <ol>
 
 
@@ -186,8 +186,8 @@ use Generic Resource Adapter for JMS.<br>
       <li><a href="#mozTocId291886">Inbound Communication</a></li>
 
 
-
-
+    
+    
     </ol>
 
 
@@ -196,8 +196,8 @@ use Generic Resource Adapter for JMS.<br>
 
   <li><a href="#mozTocId629794">How to configure the Generic Resource
 Adapter for JMS?</a>
-
-
+    
+    
     <ol>
 
 
@@ -217,8 +217,8 @@ Appclient</a></li>
       <li><a href="#mozTocId883660">Configuration Properties</a></li>
 
 
-
-
+    
+    
     </ol>
 
 
@@ -525,9 +525,9 @@ version="1.0" encoding="UTF-8"?&gt;</p>
 
 
 <p style="font-family: monospace; text-align: left;">&lt;!DOCTYPE
-sun-ejb-jar PUBLIC '-//Sun Microsystems, Inc.//DTD Application
-Server 8.1 EJB 2.1//EN'
-'http://www.sun.com/software/sunone/appserver/dtds/sun-ejb-jar_2_1-1.dtd'&gt;<br>
+sun-ejb-jar PUBLIC '-//Sun Microsystems, Inc.//DTD Sun ONE Application
+Server 7.0 EJB 2.0//EN'
+'http://www.sun.com/software/sunone/appserver/dtds/sun-ejb-jar_2_0-0.dtd'&gt;<br>
 
 
 </p>
@@ -1143,8 +1143,8 @@ will be used in create-resource-adapter-config command. <br>
 
 
     <th width="35%">
-
-
+    
+    
     <p>Property Name </p>
 
 
@@ -1152,8 +1152,8 @@ will be used in create-resource-adapter-config command. <br>
 
 
     <th width="22%">
-
-
+    
+    
     <p>Valid Values</p>
 
 
@@ -1161,8 +1161,8 @@ will be used in create-resource-adapter-config command. <br>
 
 
     <th width="21%">
-
-
+    
+    
     <p>Default Value</p>
 
 
@@ -1170,8 +1170,8 @@ will be used in create-resource-adapter-config command. <br>
 
 
     <th width="23%">
-
-
+    
+    
     <p>Description</p>
 
 
@@ -1188,42 +1188,45 @@ will be used in create-resource-adapter-config command. <br>
 
 
       <td width="35%">
-
-
+      
+      
       <p>ProviderIntegrationMode</p>
 
 
       </td>
 
 
-      <td width="22%">
-
-
+      <th style="font-weight: normal; text-align: left;" width="22%">
+      
+      
       <p style="font-style: normal;">javabean/jndi</p>
 
 
-      </td>
+      </th>
 
 
-      <td width="21%">
-
-
+      <th style="font-weight: normal; text-align: left;" width="21%">
+      
+      
       <p style="font-style: normal;">javabean</p>
 
 
-      </td>
+      </th>
 
 
-      <td width="23%">
-
-
+      <th style="font-weight: normal;" width="23%">
+      
+      
       <div style="text-align: left;"> </div>
 
+
+      
+      
       <p style="font-style: normal; text-align: left;">Decides the mode
 of integration to be used between resource adapter and jms client.</p>
 
 
-      </td>
+      </th>
 
 
     </tr>
@@ -1233,8 +1236,8 @@ of integration to be used between resource adapter and jms client.</p>
 
 
       <td width="35%">
-
-
+      
+      
       <p>ConnectionFactoryClassName</p>
 
 
@@ -1242,8 +1245,8 @@ of integration to be used between resource adapter and jms client.</p>
 
 
       <td width="22%">
-
-
+      
+      
       <p style="">Name of the class available in appserver classpath
 (eg: com.sun.messaging.ConnectionFactory)</p>
 
@@ -1252,8 +1255,8 @@ of integration to be used between resource adapter and jms client.</p>
 
 
       <td width="21%">
-
-
+      
+      
       <p style="">NA</p>
 
 
@@ -1261,8 +1264,8 @@ of integration to be used between resource adapter and jms client.</p>
 
 
       <td width="23%">
-
-
+      
+      
       <p style="">Class Name of javax.jms.ConnectionFactory
 implementation of the jms client. Used if ProviderIntegrationMode is
 specified as &ldquo;javabean&rdquo;</p>
@@ -1278,8 +1281,8 @@ specified as &ldquo;javabean&rdquo;</p>
 
 
       <td width="35%">
-
-
+      
+      
       <p>QueueConnectionFactoryClassName</p>
 
 
@@ -1287,8 +1290,8 @@ specified as &ldquo;javabean&rdquo;</p>
 
 
       <td width="22%">
-
-
+      
+      
       <p style="">Name of the class available in appserver classpath
 (eg: com.sun.messaging.QueueConnectionFactory)</p>
 
@@ -1297,8 +1300,8 @@ specified as &ldquo;javabean&rdquo;</p>
 
 
       <td width="21%">
-
-
+      
+      
       <p>NA</p>
 
 
@@ -1306,8 +1309,8 @@ specified as &ldquo;javabean&rdquo;</p>
 
 
       <td width="23%">
-
-
+      
+      
       <p style="">Class Name of javax.jms.QueueConnectionFactory
 implementation of the jms client. Used if ProviderIntegrationMode is
 specified as &ldquo;javabean&rdquo;</p>
@@ -1323,8 +1326,8 @@ specified as &ldquo;javabean&rdquo;</p>
 
 
       <td width="35%">
-
-
+      
+      
       <p>TopicConnectionFactoryClassName</p>
 
 
@@ -1332,8 +1335,8 @@ specified as &ldquo;javabean&rdquo;</p>
 
 
       <td width="22%">
-
-
+      
+      
       <p style="">Name of the class available in appserver classpath
 (eg: com.sun.messaging.TopicConnectionFactory)</p>
 
@@ -1342,8 +1345,8 @@ specified as &ldquo;javabean&rdquo;</p>
 
 
       <td width="21%">
-
-
+      
+      
       <p>NA</p>
 
 
@@ -1351,8 +1354,8 @@ specified as &ldquo;javabean&rdquo;</p>
 
 
       <td width="23%">
-
-
+      
+      
       <p style="">Class Name of javax.jms.TopicConnectionFactory
 implementation of the jms client. Used if ProviderIntegrationMode is
 specified as &ldquo;javabean&rdquo;</p>
@@ -1368,8 +1371,8 @@ specified as &ldquo;javabean&rdquo;</p>
 
 
       <td width="35%">
-
-
+      
+      
       <p>XAConnectionFactoryClassName</p>
 
 
@@ -1377,8 +1380,8 @@ specified as &ldquo;javabean&rdquo;</p>
 
 
       <td width="22%">
-
-
+      
+      
       <p style="">Name of the class available in appserver classpath
 (eg: com.sun.messaging.XAConnectionFactory)</p>
 
@@ -1387,8 +1390,8 @@ specified as &ldquo;javabean&rdquo;</p>
 
 
       <td width="21%">
-
-
+      
+      
       <p>NA</p>
 
 
@@ -1396,8 +1399,8 @@ specified as &ldquo;javabean&rdquo;</p>
 
 
       <td width="23%">
-
-
+      
+      
       <p style="">Class Name of javax.jms.ConnectionFactory
 implementation of the jms client. Used if ProviderIntegrationMode is
 specified as &ldquo;javabean&rdquo;</p>
@@ -1413,8 +1416,8 @@ specified as &ldquo;javabean&rdquo;</p>
 
 
       <td width="35%">
-
-
+      
+      
       <p>XAQueueConnectionFactoryClassName</p>
 
 
@@ -1422,8 +1425,8 @@ specified as &ldquo;javabean&rdquo;</p>
 
 
       <td width="22%">
-
-
+      
+      
       <p style="">Name of the class available in appserver classpath
 (eg: com.sun.messaging.XAQueueConnectionFactory)</p>
 
@@ -1432,8 +1435,8 @@ specified as &ldquo;javabean&rdquo;</p>
 
 
       <td width="21%">
-
-
+      
+      
       <p>NA</p>
 
 
@@ -1441,8 +1444,8 @@ specified as &ldquo;javabean&rdquo;</p>
 
 
       <td width="23%">
-
-
+      
+      
       <p style="">Class Name of javax.jms.XAQueueConnectionFactory
 implementation of the jms client. Used if ProviderIntegrationMode is
 specified as &ldquo;javabean&rdquo;</p>
@@ -1458,8 +1461,8 @@ specified as &ldquo;javabean&rdquo;</p>
 
 
       <td width="35%">
-
-
+      
+      
       <p>XATopicConnectionFactoryClassName</p>
 
 
@@ -1467,8 +1470,8 @@ specified as &ldquo;javabean&rdquo;</p>
 
 
       <td width="22%">
-
-
+      
+      
       <p style="">Name of the class available in appserver classpath
 (eg: com.sun.messaging.XATopicConnectionFactory)</p>
 
@@ -1477,8 +1480,8 @@ specified as &ldquo;javabean&rdquo;</p>
 
 
       <td width="21%">
-
-
+      
+      
       <p>NA</p>
 
 
@@ -1486,8 +1489,8 @@ specified as &ldquo;javabean&rdquo;</p>
 
 
       <td width="23%">
-
-
+      
+      
       <p style="">Class Name of javax.jms.XATopicConnectionFactory
 implementation of the jms client. Used if ProviderIntegrationMode is
 specified as &ldquo;javabean&rdquo;</p>
@@ -1517,8 +1520,8 @@ specified as &ldquo;javabean&rdquo;</td>
 
 
       <td width="35%">
-
-
+      
+      
       <p>TopicClassName</p>
 
 
@@ -1526,8 +1529,8 @@ specified as &ldquo;javabean&rdquo;</td>
 
 
       <td width="22%">
-
-
+      
+      
       <p style="">Name of the class available in appserver classpath
 (eg: com.sun.messaging.Topic)</p>
 
@@ -1536,8 +1539,8 @@ specified as &ldquo;javabean&rdquo;</td>
 
 
       <td width="21%">
-
-
+      
+      
       <p>NA</p>
 
 
@@ -1545,8 +1548,8 @@ specified as &ldquo;javabean&rdquo;</td>
 
 
       <td width="23%">
-
-
+      
+      
       <p style="">Class Name of javax.jms.Topic implementation of the
 jms client. Used if ProviderIntegrationMode is specified as &ldquo;javabean&rdquo;</p>
 
@@ -1561,8 +1564,8 @@ jms client. Used if ProviderIntegrationMode is specified as &ldquo;javabean&rdqu
 
 
       <td width="35%">
-
-
+      
+      
       <p>QueueClassName</p>
 
 
@@ -1570,8 +1573,8 @@ jms client. Used if ProviderIntegrationMode is specified as &ldquo;javabean&rdqu
 
 
       <td width="22%">
-
-
+      
+      
       <p style="">Name of the class available in appserver classpath
 (eg: com.sun.messaging.Queue)</p>
 
@@ -1580,8 +1583,8 @@ jms client. Used if ProviderIntegrationMode is specified as &ldquo;javabean&rdqu
 
 
       <td width="21%">
-
-
+      
+      
       <p>NA</p>
 
 
@@ -1589,8 +1592,8 @@ jms client. Used if ProviderIntegrationMode is specified as &ldquo;javabean&rdqu
 
 
       <td width="23%">
-
-
+      
+      
       <p style="">Class Name of javax.jms.Queue implementation of the
 jms client. Used if ProviderIntegrationMode is specified as &ldquo;javabean&rdquo;</p>
 
@@ -1605,8 +1608,8 @@ jms client. Used if ProviderIntegrationMode is specified as &ldquo;javabean&rdqu
 
 
       <td valign="top" width="35%">
-
-
+      
+      
       <p>SupportsXA</p>
 
 
@@ -1614,8 +1617,8 @@ jms client. Used if ProviderIntegrationMode is specified as &ldquo;javabean&rdqu
 
 
       <td valign="top" width="22%">
-
-
+      
+      
       <p>True/false</p>
 
 
@@ -1623,13 +1626,13 @@ jms client. Used if ProviderIntegrationMode is specified as &ldquo;javabean&rdqu
 
 
       <td sdval="0" sdnum="1033;0;BOOLEAN" valign="bottom" width="21%">
-
-
+      
+      
       <div style="text-align: left;"> </div>
 
 
-
-
+      
+      
       <p style="text-align: left;">FALSE</p>
 
 
@@ -1637,8 +1640,8 @@ jms client. Used if ProviderIntegrationMode is specified as &ldquo;javabean&rdqu
 
 
       <td valign="top" width="23%">
-
-
+      
+      
       <p>Specifies whether the jms client supports XA or not.</p>
 
 
@@ -1652,8 +1655,8 @@ jms client. Used if ProviderIntegrationMode is specified as &ldquo;javabean&rdqu
 
 
       <td width="35%">
-
-
+      
+      
       <p>ConnectionFactoryProperties</p>
 
 
@@ -1661,8 +1664,8 @@ jms client. Used if ProviderIntegrationMode is specified as &ldquo;javabean&rdqu
 
 
       <td width="22%">
-
-
+      
+      
       <p>Name value pairs separated by comma.</p>
 
 
@@ -1670,8 +1673,8 @@ jms client. Used if ProviderIntegrationMode is specified as &ldquo;javabean&rdqu
 
 
       <td width="21%">
-
-
+      
+      
       <p>NA</p>
 
 
@@ -1679,8 +1682,8 @@ jms client. Used if ProviderIntegrationMode is specified as &ldquo;javabean&rdqu
 
 
       <td width="23%">
-
-
+      
+      
       <p>This specifies the javabean propery names and values of the
 ConnectionFactory of jms client. Required only if
 ProviderIntegrationMode is &ldquo;javabean&rdquo;</p>
@@ -1696,8 +1699,8 @@ ProviderIntegrationMode is &ldquo;javabean&rdquo;</p>
 
 
       <td width="35%">
-
-
+      
+      
       <p>JndiProperties</p>
 
 
@@ -1705,8 +1708,8 @@ ProviderIntegrationMode is &ldquo;javabean&rdquo;</p>
 
 
       <td width="22%">
-
-
+      
+      
       <p>Name value pairs separated by comma.</p>
 
 
@@ -1714,8 +1717,8 @@ ProviderIntegrationMode is &ldquo;javabean&rdquo;</p>
 
 
       <td width="21%">
-
-
+      
+      
       <p>NA</p>
 
 
@@ -1723,8 +1726,8 @@ ProviderIntegrationMode is &ldquo;javabean&rdquo;</p>
 
 
       <td width="23%">
-
-
+      
+      
       <p>This specifies JNDI provider properties to be used for
 connecting to JMS provider's JNDI. Used only if ProviderIntegrationMode
 is &ldquo;jndi&rdquo;</p>
@@ -1740,8 +1743,8 @@ is &ldquo;jndi&rdquo;</p>
 
 
       <td width="35%">
-
-
+      
+      
       <p>CommonSetterMethodName</p>
 
 
@@ -1749,8 +1752,8 @@ is &ldquo;jndi&rdquo;</p>
 
 
       <td width="22%">
-
-
+      
+      
       <p>Method name.</p>
 
 
@@ -1758,8 +1761,8 @@ is &ldquo;jndi&rdquo;</p>
 
 
       <td width="21%">
-
-
+      
+      
       <p>NA</p>
 
 
@@ -1767,8 +1770,8 @@ is &ldquo;jndi&rdquo;</p>
 
 
       <td width="23%">
-
-
+      
+      
       <p>This specifies the common setter method name some JMS vendors
 use to set the properties on their administered objects. Used only if
 ProviderIntegrationMode is &ldquo;javabean&rdquo;. In case of SJSMQ, this value is
@@ -1785,8 +1788,8 @@ ProviderIntegrationMode is &ldquo;javabean&rdquo;. In case of SJSMQ, this value 
 
 
       <td width="35%">
-
-
+      
+      
       <p>UserName</p>
 
 
@@ -1794,8 +1797,8 @@ ProviderIntegrationMode is &ldquo;javabean&rdquo;. In case of SJSMQ, this value 
 
 
       <td width="22%">
-
-
+      
+      
       <p>Name of JMS user</p>
 
 
@@ -1803,8 +1806,8 @@ ProviderIntegrationMode is &ldquo;javabean&rdquo;. In case of SJSMQ, this value 
 
 
       <td width="21%">
-
-
+      
+      
       <p>NA</p>
 
 
@@ -1812,8 +1815,8 @@ ProviderIntegrationMode is &ldquo;javabean&rdquo;. In case of SJSMQ, this value 
 
 
       <td width="23%">
-
-
+      
+      
       <p>UserName to connect to JMS Provider.</p>
 
 
@@ -1827,8 +1830,8 @@ ProviderIntegrationMode is &ldquo;javabean&rdquo;. In case of SJSMQ, this value 
 
 
       <td width="35%">
-
-
+      
+      
       <p>Password</p>
 
 
@@ -1836,8 +1839,8 @@ ProviderIntegrationMode is &ldquo;javabean&rdquo;. In case of SJSMQ, this value 
 
 
       <td width="22%">
-
-
+      
+      
       <p>Password for JMS user.</p>
 
 
@@ -1845,8 +1848,8 @@ ProviderIntegrationMode is &ldquo;javabean&rdquo;. In case of SJSMQ, this value 
 
 
       <td width="21%">
-
-
+      
+      
       <p>NA</p>
 
 
@@ -1854,8 +1857,8 @@ ProviderIntegrationMode is &ldquo;javabean&rdquo;. In case of SJSMQ, this value 
 
 
       <td width="23%">
-
-
+      
+      
       <p>Password to connect to JMS provider.</p>
 
 
@@ -1895,18 +1898,9 @@ the wrapped objects. For additional information on this property, please refer t
 
     </tr>
 
-    <tr>
 
-      <td>LogLevel</td>
-
-      <td>All permitted log levels of JDK logger.</td>
-
-      <td>INFO</td>
-
-      <td>Used to specify the level of logging. If a higher loglevel is set, generic ra classes print out more information into the application server log.
-    </tr>
-
-
+  
+  
   </tbody>
 </table>
 
@@ -1943,8 +1937,8 @@ available only in ManagedConnectionFactory are given below.<br>
 
 
     <th width="25%">
-
-
+    
+    
     <p>Property Name</p>
 
 
@@ -1952,8 +1946,8 @@ available only in ManagedConnectionFactory are given below.<br>
 
 
     <th width="25%">
-
-
+    
+    
     <p>Valid Value.</p>
 
 
@@ -1961,8 +1955,8 @@ available only in ManagedConnectionFactory are given below.<br>
 
 
     <th width="25%">
-
-
+    
+    
     <p>Default Value.</p>
 
 
@@ -1970,8 +1964,8 @@ available only in ManagedConnectionFactory are given below.<br>
 
 
     <th width="25%">
-
-
+    
+    
     <p>Description</p>
 
 
@@ -1988,8 +1982,8 @@ available only in ManagedConnectionFactory are given below.<br>
 
 
       <td width="25%">
-
-
+      
+      
       <p>ClientId</p>
 
 
@@ -1997,8 +1991,8 @@ available only in ManagedConnectionFactory are given below.<br>
 
 
       <td width="25%">
-
-
+      
+      
       <p>A valid client ID</p>
 
 
@@ -2006,8 +2000,8 @@ available only in ManagedConnectionFactory are given below.<br>
 
 
       <td width="25%">
-
-
+      
+      
       <p>NA</p>
 
 
@@ -2015,8 +2009,8 @@ available only in ManagedConnectionFactory are given below.<br>
 
 
       <td width="25%">
-
-
+      
+      
       <p>ClientID as specified by jms 1.1 specification.</p>
 
 
@@ -2030,8 +2024,8 @@ available only in ManagedConnectionFactory are given below.<br>
 
 
       <td width="25%">
-
-
+      
+      
       <p>ConnectionFactoryJndiName</p>
 
 
@@ -2039,8 +2033,8 @@ available only in ManagedConnectionFactory are given below.<br>
 
 
       <td width="25%">
-
-
+      
+      
       <p>JNDI Name</p>
 
 
@@ -2048,8 +2042,8 @@ available only in ManagedConnectionFactory are given below.<br>
 
 
       <td width="25%">
-
-
+      
+      
       <p>NA</p>
 
 
@@ -2057,8 +2051,8 @@ available only in ManagedConnectionFactory are given below.<br>
 
 
       <td width="25%">
-
-
+      
+      
       <p>JNDI name of the connection factory bound in JNDI tree of JMS
 provider. Administrator should&nbsp;&nbsp; &nbsp; provide all connection factory properties
 (except clientID) in the JMS provider itself. This property name will be
@@ -2075,8 +2069,8 @@ used only if ProviderIntegratinMode is &ldquo;jndi&rdquo;.</p>
 
 
       <td valign="top" width="25%">
-
-
+      
+      
       <p>ConnectionValidationEnabled</p>
 
 
@@ -2084,8 +2078,8 @@ used only if ProviderIntegratinMode is &ldquo;jndi&rdquo;.</p>
 
 
       <td valign="top" width="25%">
-
-
+      
+      
       <p>true/false</p>
 
 
@@ -2093,13 +2087,13 @@ used only if ProviderIntegratinMode is &ldquo;jndi&rdquo;.</p>
 
 
       <td sdval="0" sdnum="1033;0;BOOLEAN" valign="bottom" width="25%">
-
-
+      
+      
       <div style="text-align: left;"> </div>
 
 
-
-
+      
+      
       <p style="text-align: left;">FALSE</p>
 
 
@@ -2107,8 +2101,8 @@ used only if ProviderIntegratinMode is &ldquo;jndi&rdquo;.</p>
 
 
       <td valign="top" width="25%">
-
-
+      
+      
       <p>If set to true, resource adapter will use an exception
 listener to catch any connection exception and will send a
 CONNECTION_ERROR_OCCURED event to application server.</p>
@@ -2120,8 +2114,8 @@ CONNECTION_ERROR_OCCURED event to application server.</p>
     </tr>
 
 
-
-
+  
+  
   </tbody>
 </table>
 
@@ -2154,8 +2148,8 @@ AdminObject are given below.</p>
 
 
     <th width="25%">
-
-
+    
+    
     <p>Property Name </p>
 
 
@@ -2163,8 +2157,8 @@ AdminObject are given below.</p>
 
 
     <th width="25%">
-
-
+    
+    
     <p>Valid Values.</p>
 
 
@@ -2172,8 +2166,8 @@ AdminObject are given below.</p>
 
 
     <th width="25%">
-
-
+    
+    
     <p>Default Value.</p>
 
 
@@ -2181,8 +2175,8 @@ AdminObject are given below.</p>
 
 
     <th width="25%">
-
-
+    
+    
     <p>Description</p>
 
 
@@ -2199,8 +2193,8 @@ AdminObject are given below.</p>
 
 
       <td width="25%">
-
-
+      
+      
       <p>DestinationJndiName</p>
 
 
@@ -2208,8 +2202,8 @@ AdminObject are given below.</p>
 
 
       <td width="25%">
-
-
+      
+      
       <p>Jndi Name </p>
 
 
@@ -2217,8 +2211,8 @@ AdminObject are given below.</p>
 
 
       <td width="25%">
-
-
+      
+      
       <p>NA</p>
 
 
@@ -2226,8 +2220,8 @@ AdminObject are given below.</p>
 
 
       <td width="25%">
-
-
+      
+      
       <p>JNDI name of the destination bound in JNDI tree of JMS
 provider. Administrator should provide all properties in the JMS
 provider itself. This property name will be used only if
@@ -2244,8 +2238,8 @@ ProviderIntegrationMode is &ldquo;jndi&rdquo;.</p>
 
 
       <td width="25%">
-
-
+      
+      
       <p>DestinationProperties</p>
 
 
@@ -2253,8 +2247,8 @@ ProviderIntegrationMode is &ldquo;jndi&rdquo;.</p>
 
 
       <td width="25%">
-
-
+      
+      
       <p>Name value pairs separated by comma</p>
 
 
@@ -2262,8 +2256,8 @@ ProviderIntegrationMode is &ldquo;jndi&rdquo;.</p>
 
 
       <td width="25%">
-
-
+      
+      
       <p><br>
 
 
@@ -2274,8 +2268,8 @@ ProviderIntegrationMode is &ldquo;jndi&rdquo;.</p>
 
 
       <td width="25%">
-
-
+      
+      
       <p>This specifies the javabean propery names and values of the
 Destination of jms client. Required only if ProviderIntegrationMode is
 &ldquo;javabean&rdquo;</p>
@@ -2287,8 +2281,8 @@ Destination of jms client. Required only if ProviderIntegrationMode is
     </tr>
 
 
-
-
+  
+  
   </tbody>
 </table>
 
@@ -2320,8 +2314,8 @@ properties available only in ActivationSpec are given below.</p>
 
 
     <th width="25%">
-
-
+    
+    
     <p>Property Name </p>
 
 
@@ -2329,8 +2323,8 @@ properties available only in ActivationSpec are given below.</p>
 
 
     <th width="25%">
-
-
+    
+    
     <p>Valid Values.</p>
 
 
@@ -2338,8 +2332,8 @@ properties available only in ActivationSpec are given below.</p>
 
 
     <th width="25%">
-
-
+    
+    
     <p>Default Value.</p>
 
 
@@ -2347,8 +2341,8 @@ properties available only in ActivationSpec are given below.</p>
 
 
     <th width="25%">
-
-
+    
+    
     <p>Description</p>
 
 
@@ -2365,8 +2359,8 @@ properties available only in ActivationSpec are given below.</p>
 
 
       <td valign="top" width="25%">
-
-
+      
+      
       <p>MaxPoolSize</p>
 
 
@@ -2374,8 +2368,8 @@ properties available only in ActivationSpec are given below.</p>
 
 
       <td valign="top" width="25%">
-
-
+      
+      
       <p>An integer</p>
 
 
@@ -2383,8 +2377,8 @@ properties available only in ActivationSpec are given below.</p>
 
 
       <td sdval="8" sdnum="1033;" valign="bottom" width="25%">
-
-
+      
+      
       <p align="right">8</p>
 
 
@@ -2392,8 +2386,8 @@ properties available only in ActivationSpec are given below.</p>
 
 
       <td valign="top" width="25%">
-
-
+      
+      
       <p>Maximum size of server session pool internally created by
 resource adapter for achieving concurrent message delivery. This should
 be equal to maximum pool size of MDB objects.</p>
@@ -2409,8 +2403,8 @@ be equal to maximum pool size of MDB objects.</p>
 
 
       <td valign="top" width="25%">
-
-
+      
+      
       <p>MaxWaitTime</p>
 
 
@@ -2418,8 +2412,8 @@ be equal to maximum pool size of MDB objects.</p>
 
 
       <td valign="top" width="25%">
-
-
+      
+      
       <p>An integer</p>
 
 
@@ -2427,8 +2421,8 @@ be equal to maximum pool size of MDB objects.</p>
 
 
       <td sdval="3" sdnum="1033;" valign="bottom" width="25%">
-
-
+      
+      
       <p align="right">3</p>
 
 
@@ -2436,8 +2430,8 @@ be equal to maximum pool size of MDB objects.</p>
 
 
       <td valign="top" width="25%">
-
-
+      
+      
       <p>Resource Adapter will wait for the time in seconds specified
 by this property to obtain a server session from its internal pool. If
 this limit is exceeded message delivery will fail.</p>
@@ -2453,8 +2447,8 @@ this limit is exceeded message delivery will fail.</p>
 
 
       <td width="25%">
-
-
+      
+      
       <p>SubscriptionDurability</p>
 
 
@@ -2462,8 +2456,8 @@ this limit is exceeded message delivery will fail.</p>
 
 
       <td width="25%">
-
-
+      
+      
       <p>&ldquo;Durable&rdquo; or &ldquo;Non-Durable&rdquo;</p>
 
 
@@ -2471,8 +2465,8 @@ this limit is exceeded message delivery will fail.</p>
 
 
       <td width="25%">
-
-
+      
+      
       <p align="left">&ldquo;Non-Durable&rdquo;</p>
 
 
@@ -2480,8 +2474,8 @@ this limit is exceeded message delivery will fail.</p>
 
 
       <td width="25%">
-
-
+      
+      
       <p>SubscriptionDurability as specified by jms 1.1 specification.</p>
 
 
@@ -2495,8 +2489,8 @@ this limit is exceeded message delivery will fail.</p>
 
 
       <td width="25%">
-
-
+      
+      
       <p>SubscriptionName</p>
 
 
@@ -2504,8 +2498,8 @@ this limit is exceeded message delivery will fail.</p>
 
 
       <td width="25%">
-
-
+      
+      
       <p><br>
 
 
@@ -2516,8 +2510,8 @@ this limit is exceeded message delivery will fail.</p>
 
 
       <td width="25%">
-
-
+      
+      
       <p align="left">NA</p>
 
 
@@ -2525,8 +2519,8 @@ this limit is exceeded message delivery will fail.</p>
 
 
       <td width="25%">
-
-
+      
+      
       <p>SubscriptionName as specified by jms 1.1 specification.</p>
 
 
@@ -2540,8 +2534,8 @@ this limit is exceeded message delivery will fail.</p>
 
 
       <td width="25%">
-
-
+      
+      
       <p>MessageSelector</p>
 
 
@@ -2549,8 +2543,8 @@ this limit is exceeded message delivery will fail.</p>
 
 
       <td width="25%">
-
-
+      
+      
       <p>A valid message selector</p>
 
 
@@ -2558,8 +2552,8 @@ this limit is exceeded message delivery will fail.</p>
 
 
       <td width="25%">
-
-
+      
+      
       <p align="left">NA</p>
 
 
@@ -2567,8 +2561,8 @@ this limit is exceeded message delivery will fail.</p>
 
 
       <td width="25%">
-
-
+      
+      
       <p>MessageSelector as specified by jms 1.1 specification.</p>
 
 
@@ -2582,8 +2576,8 @@ this limit is exceeded message delivery will fail.</p>
 
 
       <td width="25%">
-
-
+      
+      
       <p>ClientID</p>
 
 
@@ -2591,8 +2585,8 @@ this limit is exceeded message delivery will fail.</p>
 
 
       <td width="25%">
-
-
+      
+      
       <p>A valid client ID</p>
 
 
@@ -2600,8 +2594,8 @@ this limit is exceeded message delivery will fail.</p>
 
 
       <td width="25%">
-
-
+      
+      
       <p align="left">NA</p>
 
 
@@ -2609,8 +2603,8 @@ this limit is exceeded message delivery will fail.</p>
 
 
       <td width="25%">
-
-
+      
+      
       <p>ClientID as specified by jms 1.1 specification.</p>
 
 
@@ -2624,8 +2618,8 @@ this limit is exceeded message delivery will fail.</p>
 
 
       <td width="25%">
-
-
+      
+      
       <p>ConnectionFactoryJndiName</p>
 
 
@@ -2633,8 +2627,8 @@ this limit is exceeded message delivery will fail.</p>
 
 
       <td width="25%">
-
-
+      
+      
       <p>A valid Jndi Name </p>
 
 
@@ -2642,8 +2636,8 @@ this limit is exceeded message delivery will fail.</p>
 
 
       <td width="25%">
-
-
+      
+      
       <p align="left">NA</p>
 
 
@@ -2651,8 +2645,8 @@ this limit is exceeded message delivery will fail.</p>
 
 
       <td width="25%">
-
-
+      
+      
       <p>JNDI name of connection factory created in JMS provider. This
 connection factory will be used by resource adapter to create a
 connection to receive messages. Used only if ProviderIntegrationMode is
@@ -2669,8 +2663,8 @@ configured as &ldquo;jndi&rdquo;</p>
 
 
       <td width="25%">
-
-
+      
+      
       <p>DestinationJndiName</p>
 
 
@@ -2678,8 +2672,8 @@ configured as &ldquo;jndi&rdquo;</p>
 
 
       <td width="25%">
-
-
+      
+      
       <p>A valid Jndi Name </p>
 
 
@@ -2687,8 +2681,8 @@ configured as &ldquo;jndi&rdquo;</p>
 
 
       <td width="25%">
-
-
+      
+      
       <p align="left">NA</p>
 
 
@@ -2696,8 +2690,8 @@ configured as &ldquo;jndi&rdquo;</p>
 
 
       <td width="25%">
-
-
+      
+      
       <p>JNDI name of destination created in JMS provider. This
 destination will be used by resource adapter to create a connection to
 receive messages from. Used only if ProviderIntegrationMode is
@@ -2714,8 +2708,8 @@ configured as &ldquo;jndi&rdquo;</p>
 
 
       <td width="25%">
-
-
+      
+      
       <p>DestinationType</p>
 
 
@@ -2723,8 +2717,8 @@ configured as &ldquo;jndi&rdquo;</p>
 
 
       <td width="25%">
-
-
+      
+      
       <p>&ldquo;javax.jms.Queue&rdquo; or &ldquo;javax.jms.Topic&rdquo;</p>
 
 
@@ -2732,8 +2726,8 @@ configured as &ldquo;jndi&rdquo;</p>
 
 
       <td width="25%">
-
-
+      
+      
       <p align="left">null<br>
 
       </p>
@@ -2743,8 +2737,8 @@ configured as &ldquo;jndi&rdquo;</p>
 
 
       <td width="25%">
-
-
+      
+      
       <p>Type of the destination the MDB will listen to.</p>
 
 
@@ -2758,8 +2752,8 @@ configured as &ldquo;jndi&rdquo;</p>
 
 
       <td width="25%">
-
-
+      
+      
       <p>DestinationProperties</p>
 
 
@@ -2767,8 +2761,8 @@ configured as &ldquo;jndi&rdquo;</p>
 
 
       <td width="25%">
-
-
+      
+      
       <p>Name Value Pairs separated by comma</p>
 
 
@@ -2776,8 +2770,8 @@ configured as &ldquo;jndi&rdquo;</p>
 
 
       <td width="25%">
-
-
+      
+      
       <p align="left">NA</p>
 
 
@@ -2785,8 +2779,8 @@ configured as &ldquo;jndi&rdquo;</p>
 
 
       <td width="25%">
-
-
+      
+      
       <p>This specifies the javabean propery names and values of the
 Destination of jms client. Required only if ProviderIntegrationMode is
 &ldquo;javabean&rdquo;</p>
@@ -2802,8 +2796,8 @@ Destination of jms client. Required only if ProviderIntegrationMode is
 
 
       <td width="25%">
-
-
+      
+      
       <p>RedeliveryAttempts</p>
 
 
@@ -2811,8 +2805,8 @@ Destination of jms client. Required only if ProviderIntegrationMode is
 
 
       <td width="25%">
-
-
+      
+      
       <p>integer</p>
 
 
@@ -2820,8 +2814,8 @@ Destination of jms client. Required only if ProviderIntegrationMode is
 
 
       <td width="25%">
-
-
+      
+      
       <p align="left"><br>
 
 
@@ -2832,8 +2826,8 @@ Destination of jms client. Required only if ProviderIntegrationMode is
 
 
       <td width="25%">
-
-
+      
+      
       <p>Number of times a message will be redelivered in case a
 message cause a runtime exception in the MDB.</p>
 
@@ -2848,8 +2842,8 @@ message cause a runtime exception in the MDB.</p>
 
 
       <td width="25%">
-
-
+      
+      
       <p>RedeliveryInterval</p>
 
 
@@ -2857,8 +2851,8 @@ message cause a runtime exception in the MDB.</p>
 
 
       <td width="25%">
-
-
+      
+      
       <p>time in seconds</p>
 
 
@@ -2866,8 +2860,8 @@ message cause a runtime exception in the MDB.</p>
 
 
       <td width="25%">
-
-
+      
+      
       <p align="left"><br>
 
 
@@ -2878,8 +2872,8 @@ message cause a runtime exception in the MDB.</p>
 
 
       <td width="25%">
-
-
+      
+      
       <p>interval between redeliveries, in case a message cause a
 runtime exception in the MDB.</p>
 
@@ -2894,8 +2888,8 @@ runtime exception in the MDB.</p>
 
 
       <td width="25%">
-
-
+      
+      
       <p>SendBadMessagesToDMD</p>
 
 
@@ -2903,8 +2897,8 @@ runtime exception in the MDB.</p>
 
 
       <td width="25%">
-
-
+      
+      
       <p>true/false</p>
 
 
@@ -2912,8 +2906,8 @@ runtime exception in the MDB.</p>
 
 
       <td width="25%">
-
-
+      
+      
       <p align="left">false.</p>
 
 
@@ -2921,8 +2915,8 @@ runtime exception in the MDB.</p>
 
 
       <td width="25%">
-
-
+      
+      
       <p>Indicates whether RA should send the messages to a dead
 message destination, if redelivery attempts is exceeded.</p>
 
@@ -2937,8 +2931,8 @@ message destination, if redelivery attempts is exceeded.</p>
 
 
       <td width="25%">
-
-
+      
+      
       <p>DeadMessageDestinationJndiName</p>
 
 
@@ -2946,8 +2940,8 @@ message destination, if redelivery attempts is exceeded.</p>
 
 
       <td width="25%">
-
-
+      
+      
       <p>a valid JNDI name.</p>
 
 
@@ -2955,8 +2949,8 @@ message destination, if redelivery attempts is exceeded.</p>
 
 
       <td width="25%">
-
-
+      
+      
       <p align="left">NA</p>
 
 
@@ -2964,8 +2958,8 @@ message destination, if redelivery attempts is exceeded.</p>
 
 
       <td width="25%">
-
-
+      
+      
       <p>JNDI name of destination created in JMS provider. Target
 destination for dead messages. Used only if ProviderIntegrationMode is
 configured as &ldquo;jndi&rdquo;</p>
@@ -2981,8 +2975,8 @@ configured as &ldquo;jndi&rdquo;</p>
 
 
       <td width="25%">
-
-
+      
+      
       <p>DeadMessageDestinationClassName</p>
 
 
@@ -2990,8 +2984,8 @@ configured as &ldquo;jndi&rdquo;</p>
 
 
       <td width="25%">
-
-
+      
+      
       <p>class name of destination object.</p>
 
 
@@ -2999,8 +2993,8 @@ configured as &ldquo;jndi&rdquo;</p>
 
 
       <td width="25%">
-
-
+      
+      
       <p align="left">NA</p>
 
 
@@ -3008,8 +3002,8 @@ configured as &ldquo;jndi&rdquo;</p>
 
 
       <td width="25%">
-
-
+      
+      
       <p style="">Used if ProviderIntegrationMode is specified as
 &ldquo;javabean&rdquo;</p>
 
@@ -3024,8 +3018,8 @@ configured as &ldquo;jndi&rdquo;</p>
 
 
       <td width="25%">
-
-
+      
+      
       <p>DeadMessageDestinationProperties</p>
 
 
@@ -3033,8 +3027,8 @@ configured as &ldquo;jndi&rdquo;</p>
 
 
       <td width="25%">
-
-
+      
+      
       <p>Name Value Pairs separated by comma</p>
 
 
@@ -3042,8 +3036,8 @@ configured as &ldquo;jndi&rdquo;</p>
 
 
       <td width="25%">
-
-
+      
+      
       <p align="left">NA</p>
 
 
@@ -3051,8 +3045,8 @@ configured as &ldquo;jndi&rdquo;</p>
 
 
       <td width="25%">
-
-
+      
+      
       <p style="">This specifies the javabean propery names and values
 of the Destination of jms client. Required only if
 ProviderIntegrationMode is &ldquo;javabean&rdquo;</p>
@@ -3107,8 +3101,8 @@ configured as &ldquo;jndi&rdquo;</td>
 
 
       <td width="25%">
-
-
+      
+      
       <p>ReconnectAttempts</p>
 
 
@@ -3116,8 +3110,8 @@ configured as &ldquo;jndi&rdquo;</td>
 
 
       <td width="25%">
-
-
+      
+      
       <p>integer</p>
 
 
@@ -3125,8 +3119,8 @@ configured as &ldquo;jndi&rdquo;</td>
 
 
       <td width="25%">
-
-
+      
+      
       <p align="left"><br>
 
 
@@ -3137,8 +3131,8 @@ configured as &ldquo;jndi&rdquo;</td>
 
 
       <td width="25%">
-
-
+      
+      
       <p>Number of times a reconnect will be attempted in case
 exception listener catches an error on connection.</p>
 
@@ -3153,8 +3147,8 @@ exception listener catches an error on connection.</p>
 
 
       <td width="25%">
-
-
+      
+      
       <p>ReconnectInterval</p>
 
 
@@ -3162,8 +3156,8 @@ exception listener catches an error on connection.</p>
 
 
       <td width="25%">
-
-
+      
+      
       <p>time in seconds</p>
 
 
@@ -3171,8 +3165,8 @@ exception listener catches an error on connection.</p>
 
 
       <td width="25%">
-
-
+      
+      
       <p align="left"><br>
 
 
@@ -3183,8 +3177,8 @@ exception listener catches an error on connection.</p>
 
 
       <td width="25%">
-
-
+      
+      
       <p>interval between reconnects.</p>
 
 
@@ -3194,8 +3188,8 @@ exception listener catches an error on connection.</p>
     </tr>
 
 
-
-
+  
+  
   </tbody>
 </table>
 
@@ -3221,8 +3215,8 @@ next version of the document.</p>
 
 
     <th width="33%">
-
-
+    
+    
     <p align="justify">Feature Name</p>
 
 
@@ -3230,8 +3224,8 @@ next version of the document.</p>
 
 
     <th width="37%">
-
-
+    
+    
     <p align="justify">Description</p>
 
 
@@ -3239,8 +3233,8 @@ next version of the document.</p>
 
 
     <th width="30%">
-
-
+    
+    
     <p align="justify">Comments/Caveats</p>
 
 
@@ -3257,8 +3251,8 @@ next version of the document.</p>
 
 
       <td width="33%">
-
-
+      
+      
       <p style="font-style: normal;" align="justify">Connection Pooling
  </p>
 
@@ -3267,8 +3261,8 @@ next version of the document.</p>
 
 
       <td width="37%">
-
-
+      
+      
       <p style="font-style: normal;" align="justify">The resource
 adapter supports connection pooling as specified by the connector
 specification</p>
@@ -3278,8 +3272,8 @@ specification</p>
 
 
       <td width="30%">
-
-
+      
+      
       <p align="justify"><br>
 
 
@@ -3296,8 +3290,8 @@ specification</p>
 
 
       <td width="33%">
-
-
+      
+      
       <p style="font-style: normal;" align="justify">Distributed
 Transactions</p>
 
@@ -3306,8 +3300,8 @@ Transactions</p>
 
 
       <td width="37%">
-
-
+      
+      
       <p align="justify">Supports XA for both inbound and outbound
 communication.</p>
 
@@ -3316,8 +3310,8 @@ communication.</p>
 
 
       <td width="30%">
-
-
+      
+      
       <p align="justify">Depends on the XA support of the JMS provider
 and its client library.</p>
 
@@ -3332,8 +3326,8 @@ and its client library.</p>
 
 
       <td width="33%">
-
-
+      
+      
       <p style="font-style: normal;" align="justify">Concurrent Message
 Delivery</p>
 
@@ -3342,8 +3336,8 @@ Delivery</p>
 
 
       <td width="37%">
-
-
+      
+      
       <p align="justify">Concurrent Message delivery for both topics
 and Queues.</p>
 
@@ -3352,8 +3346,8 @@ and Queues.</p>
 
 
       <td width="30%">
-
-
+      
+      
       <p align="justify">Batched Message delivery is not supported.</p>
 
 
@@ -3367,8 +3361,8 @@ and Queues.</p>
 
 
       <td width="33%">
-
-
+      
+      
       <p style="font-style: normal;" align="justify">Connection
 Exception Handling</p>
 
@@ -3377,8 +3371,8 @@ Exception Handling</p>
 
 
       <td width="37%">
-
-
+      
+      
       <p align="justify">A CONNECTION_ERROR_OCCURED event will be sent
 to the application server, when a fatal error occur on a physical
 connection. The connection will subsequently be removed from the
@@ -3389,15 +3383,15 @@ connection pool.</p>
 
 
       <td width="30%">
-
-
+      
+      
       <p align="justify">This is an availability feature and its
 implementation <span style="">depends on ExceptionListener support of
 the JMS provider.</span></p>
 
 
-
-
+      
+      
       <p align="justify"><b>Not yet tested successfully</b></p>
 
 
@@ -3411,8 +3405,8 @@ the JMS provider.</span></p>
 
 
       <td width="33%">
-
-
+      
+      
       <p style="font-style: normal;" align="justify">Dead Message
 Destination</p>
 
@@ -3421,8 +3415,8 @@ Destination</p>
 
 
       <td width="37%">
-
-
+      
+      
       <p align="justify">After redelivering, as many times as specified
 in the activation-spec property RedeliveryAttempts, a poisonous message,
 that results in throwing of a&nbsp; runtime exception in a transacted
@@ -3433,8 +3427,8 @@ MDB, will be moved to this destination </p>
 
 
       <td width="30%">
-
-
+      
+      
       <p align="justify">RedeliveryAttempts and RedeliveryInterval can
 also be configured.</p>
 
@@ -3449,8 +3443,8 @@ also be configured.</p>
 
 
       <td width="33%">
-
-
+      
+      
       <p style="font-style: normal;" align="justify">Reconnect for
 inbound connections.</p>
 
@@ -3459,8 +3453,8 @@ inbound connections.</p>
 
 
       <td width="37%">
-
-
+      
+      
       <p align="justify">Inbound connections will be destroyed and
 reconnected, if the connection that receives the messages fails</p>
 
@@ -3469,8 +3463,8 @@ reconnected, if the connection that receives the messages fails</p>
 
 
       <td width="30%">
-
-
+      
+      
       <p align="justify"><b>Not yet tested successfully </b><span style="">and depends on ExceptionListener support of the JMS provider.</span></p>
 
 
@@ -3480,8 +3474,8 @@ reconnected, if the connection that receives the messages fails</p>
     </tr>
 
 
-
-
+  
+  
   </tbody>
 </table>
 
@@ -3496,8 +3490,8 @@ reconnected, if the connection that receives the messages fails</p>
 
 
   <li>
-
-
+    
+    
     <p>Connection Pooling cannot be used for outbound connections that
 use ClientID.</p>
 
@@ -3506,8 +3500,8 @@ use ClientID.</p>
 
 
   <li>
-
-
+    
+    
     <p align="justify">Load balancing of inbound messages to appserver
 instances of a cluster is not supported by the resource adapter.
 However, if a JMS provider support load balancing, resource adapter
@@ -3518,8 +3512,8 @@ should be able to make use of that.</p>
 
 
   <li>
-
-
+    
+    
     <p>If the JMS client library does not support ConnectionConsumer,
 then inbound communication will not work.</p>
 

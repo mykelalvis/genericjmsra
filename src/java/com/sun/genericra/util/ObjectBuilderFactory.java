@@ -9,23 +9,20 @@
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
  */
 package com.sun.genericra.util;
 
-import java.lang.reflect.*;
-
-import java.security.*;
-
-import java.util.Hashtable;
-import java.util.logging.*;
-
 import javax.naming.*;
-
 import javax.resource.ResourceException;
+import java.security.*;
+import java.util.logging.*;
+import java.util.Hashtable;
+import java.util.StringTokenizer;
+import java.lang.reflect.*;
 
 
 /**
@@ -35,23 +32,21 @@ import javax.resource.ResourceException;
  * @author Binod P.G
  */
 public class ObjectBuilderFactory {
-    private static boolean debug = false;
-    private static Logger logger;
 
+    private static boolean debug = false;
+
+    private static Logger logger;
     static {
         logger = LogUtils.getLogger();
     }
 
     public ObjectBuilder createUsingClassName(String name) {
-        return new ClassObjectBuilder(name);
+        return  new ClassObjectBuilder(name);      
     }
 
-    public ObjectBuilder createUsingJndiName(String jndiName, String jndiProps) {
+    public ObjectBuilder createUsingJndiName(String jndiName,
+                                             String jndiProps) {
         return new JndiObjectBuilder(jndiName, jndiProps);
-    }
-
-    void debug(String str) {
-        logger.log(Level.FINEST, str);
     }
 
     class ClassObjectBuilder extends ObjectBuilder {
@@ -61,18 +56,15 @@ public class ObjectBuilderFactory {
             this.className = className;
         }
 
-        public Object createObject() throws ResourceException {
+        public Object createObject() throws ResourceException{
             try {
-                return Class.forName(className).newInstance();
+                 return Class.forName(className).newInstance();
             } catch (ClassNotFoundException e) {
-                e.printStackTrace();                       
-                throw ExceptionUtils.newInvalidPropertyException(e);
+                 throw ExceptionUtils.newInvalidPropertyException(e);
             } catch (InstantiationException ie) {
-                ie.printStackTrace();
-                throw ExceptionUtils.newInvalidPropertyException(ie);
+                 throw ExceptionUtils.newInvalidPropertyException(ie);
             } catch (IllegalAccessException iae) {
-                iae.printStackTrace();
-                throw ExceptionUtils.newSecurityException(iae);
+                 throw ExceptionUtils.newSecurityException(iae);
             }
         }
     }
@@ -89,15 +81,18 @@ public class ObjectBuilderFactory {
         public Object createObject() throws ResourceException {
             try {
                 Hashtable props = parseToProperties(this.jndiProps);
-                debug("Properties passed to InitialContext :: " + props);
-
+                debug("Properties passed to InitialContext :: " +  props);
                 InitialContext ic = new InitialContext(props);
                 debug("Looking the JNDI name :" + this.jndiName);
-
                 return ic.lookup(this.jndiName);
             } catch (Exception e) {
-                throw ExceptionUtils.newInvalidPropertyException(e);
+                 throw ExceptionUtils.newInvalidPropertyException(e);
             }
         }
     }
+
+    void debug(String str) {
+        logger.log(Level.FINEST, str);
+    }
+
 }
