@@ -1,6 +1,5 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
-<head>
+<html><head>
 
 
   
@@ -9,8 +8,8 @@
   
   
   
-  <title>Configure_GenericJMSRA_For_IBMMQ</title>
-  <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+  
+  <title>Configure_GenericJMSRA_For_IBMMQ</title><meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
 
 
 
@@ -32,9 +31,7 @@
 <!--
 @page { size: 8.27in 11.69in; margin: 0.79in }
 P { margin-bottom: 0.08in }
---></style>
-</head>
-
+--></style></head>
 
 <body>
 
@@ -311,7 +308,7 @@ modify a domain's classpath. Open a browser and type the url of the
 application server admin GUI - http://hostname:adminport. Go to
 Application Server -&gt; JVM Settings -&gt; Path Settings . Add
 an
-entry for the jar files shown below [comma-separated as shown below] in
+entry for the jar files shown below&nbsp; in
 the classpath suffix. Restart the application server domain for these
 changes to take
 effect.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </li>
@@ -323,57 +320,61 @@ effect.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </li>
 
 
 <span style="font-style: italic;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-/opt/mqm/java/lib/com.ibm.mq.jar,</span><br style="font-style: italic;">
+/opt/mqm/java/lib/com.ibm.mq.jar</span><br style="font-style: italic;">
 
 
 
 <span style="font-style: italic;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-/opt/mqm/java/lib/com.ibm.mq.jms.Nojndi.jar,</span><br style="font-style: italic;">
+/opt/mqm/java/lib/com.ibm.mq.jms.Nojndi.jar</span><br style="font-style: italic;">
 
 
 
 <span style="font-style: italic;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-/opt/mqm/java/lib/com.ibm.mq.soap.jar,</span><br style="font-style: italic;">
+/opt/mqm/java/lib/com.ibm.mq.soap.jar</span><br style="font-style: italic;">
 
 
 
 <span style="font-style: italic;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-/opt/mqm/java/lib/com.ibm.mqjms.jar,</span><br style="font-style: italic;">
+/opt/mqm/java/lib/com.ibm.mqjms.jar</span><br style="font-style: italic;">
 
 
 
 <span style="font-style: italic;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-/opt/mqm/java/lib/com.ibm.mqetclient.jar,</span><br style="font-style: italic;">
+/opt/mqm/java/lib/com.ibm.mqetclient.jar</span><br style="font-style: italic;">
 
 
 
 <span style="font-style: italic;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-/opt/mqm/java/lib/commonservices.jar,</span><br style="font-style: italic;">
+/opt/mqm/java/lib/commonservices.jar</span><br style="font-style: italic;">
 
 
 
 <span style="font-style: italic;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-/opt/mqm/java/lib/dhbcore.jar,</span><br style="font-style: italic;">
+/opt/mqm/java/lib/dhbcore.jar</span><br style="font-style: italic;">
 
 
 
 <span style="font-style: italic;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-/opt/mqm/java/lib/rmm.jar,</span><br style="font-style: italic;">
+/opt/mqm/java/lib/rmm.jar</span><br style="font-style: italic;">
 
 
 
 <span style="font-style: italic;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-/opt/mqm/java/lib/providerutil.jar,</span><br style="font-style: italic;">
+/opt/mqm/java/lib/providerutil.jar</span><br style="font-style: italic;">
 
 
 
 <span style="font-style: italic;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-/opt/mqm/java/lib/CL3Export.jar,</span><br style="font-style: italic;">
+/opt/mqm/java/lib/CL3Export.jar</span><br style="font-style: italic;">
 
 
 
 <span style="font-style: italic;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-/opt/mqm/java/lib/CL3Nonexport.jar</span><br>
+/opt/mqm/java/lib/CL3Nonexport.jar<br><br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; <span style="text-decoration: underline;">Note:
+If you are on windows the path separator for the jar files should be
+";" and on unix it should be ":". Please verify if the changes have
+been updated correctly in domain.xml ,
+jvm-options-&gt;classpath-suffix&nbsp;</span><br></span>
 
 
 
@@ -875,7 +876,13 @@ create-resource-adapter-config --user &lt;adminname&gt;
 
 
 <span style="font-style: italic;">file\\:\\/\\/opt\\/tmp:LogLevel=finest
-genericra</span><br style="font-style: italic;">
+genericra<br><br><br>The
+properties have been escaped using a "\" since they are entered through
+the command line (asadmin), the escape sequence is not necessary if the
+configuration is performed through the admin GUI.<br>Also , ensure that
+the provider URL is configured correctly depending on the platform. For
+e.g on Windows it should be file:/C:/opt/tmp and on unix it is
+file://opt/tmp<br style="font-style: italic;"></span>
 
 
 
@@ -883,7 +890,7 @@ genericra</span><br style="font-style: italic;">
 
 
 
-<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; <br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;<br>
 
 
 
@@ -1059,7 +1066,11 @@ ConnectionFactoryJndiName=QCF mypool<br>
 
 
 
-<br>
+<br><span style="font-style: italic;">Note: For XA support : The pool
+has have a transactionsupport of XATransaction and the CF that has been
+bound should also be XA capable, also ensure that SupportsXA is set to
+true in ra config and the MDB deployment descriptor says the onMessage
+method is transacted.</span><br><br>
 
 
 
@@ -1719,5 +1730,4 @@ Thanks to Binod PG for reviewing this documentation and providing feedback.<br>
 
 </span>
 
-</body>
-</html>
+</body></html>
