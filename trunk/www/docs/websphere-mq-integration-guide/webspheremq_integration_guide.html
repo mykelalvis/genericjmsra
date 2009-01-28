@@ -370,14 +370,11 @@ effect.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </li>
 
 
 <span style="font-style: italic;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-/opt/mqm/java/lib/CL3Nonexport.jar<br><br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; <span style="text-decoration: underline;">Note:
-If you are on windows the path separator for the jar files should be
-";" and on unix it should be ":". Please verify if the changes have
-been updated correctly in domain.xml ,
-jvm-options-&gt;classpath-suffix&nbsp;</span><br></span>
-
-
-
+/opt/mqm/java/lib/CL3Nonexport.jar<br><br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;
+Note: If you are using windows, the path separator for the jar files should be
+";" and if you are using *nix it should be ":". Please verify if the changes have
+been updated correctly in domain.xml under the element
+jvm-options-&gt;classpath-suffix&nbsp;<br></span>
 <ul>
 
 
@@ -1067,7 +1064,10 @@ ConnectionFactoryJndiName=QCF mypool<br>
 
 
 <br><span style="font-style: italic;">Note: For XA support: <br>
-General: Ensure that SupportsXA is set to true in resource-adapter-config.
+General: For XA support, please install the Websphere MQ 
+<a href="http://www-01.ibm.com/software/integration/wmq/transclient.html">
+Extended Transaction Client</a> from the Websphere MQ CD set and
+ensure that the SupportsXA attribute is set to true in resource-adapter-config.
 <br>
 Outbound communication to Websphere MQ: Ensure that the connector 
 connection pool is configured to have a transactionsupport of type XATransaction 
@@ -1080,8 +1080,6 @@ that the onMessage method is transacted.</span><br><br>
 
 #Creates a Connection Pool called mypool2 and points to XATCF created
 in IBM MQ<br>
-
-
 
 asadmin create-connector-connection-pool -- raname genericra
 connectiondefinition javax.jms.TopicConnectionFactory
