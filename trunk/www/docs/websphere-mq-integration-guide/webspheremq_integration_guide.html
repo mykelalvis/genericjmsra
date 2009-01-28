@@ -876,7 +876,7 @@ create-resource-adapter-config --user &lt;adminname&gt;
 
 
 <span style="font-style: italic;">file\\:\\/\\/opt\\/tmp:LogLevel=finest
-genericra<br><br><br>The
+genericra<br><br><br>Note: The
 properties have been escaped using a "\" since they are entered through
 the command line (asadmin), the escape sequence is not necessary if the
 configuration is performed through the admin GUI.<br>Also , ensure that
@@ -1066,12 +1066,16 @@ ConnectionFactoryJndiName=QCF mypool<br>
 
 
 
-<br><span style="font-style: italic;">Note: For XA support : The pool
-has have a transactionsupport of XATransaction and the CF that has been
-bound should also be XA capable, also ensure that SupportsXA is set to
-true in ra config and the MDB deployment descriptor says the onMessage
-method is transacted.</span><br><br>
-
+<br><span style="font-style: italic;">Note: For XA support: <br>
+General: Ensure that SupportsXA is set to true in resource-adapter-config.
+<br>
+Outbound communication to Websphere MQ: Ensure that the connector 
+connection pool is configured to have a transactionsupport of type XATransaction 
+and the connection factory that has been bound in JNDI is XA capable. 
+Ensure that SupportsXA is set to true in resource-adapter-config.
+<br>
+Transacted delivery to MDBs: Ensure that the MDB deployment descriptor indicates 
+that the onMessage method is transacted.</span><br><br>
 
 
 #Creates a Connection Pool called mypool2 and points to XATCF created
