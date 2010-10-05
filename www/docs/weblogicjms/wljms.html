@@ -1,0 +1,540 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>Using GenericJMSRA to connect to Oracle WebLogic JMS</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+<body>
+<h1>Using GenericJMSRA to connect Glassfish to Oracle WebLogic JMS</h1>
+<p>
+Author: Nigel Deakin<br/>
+Date: 15 Sept 2010<br/>
+Relates to GenericJMSRA version 2.1</br>
+
+<p>
+This is a description of how to use GenericJMSRA to allow a application running in Glassfish Server to exchange messages with WebLogic JMS. 
+
+<h2>Configuration properties</h2>
+
+<p>
+The tables below list the properties that need to be set to configure the resource adapter and any activation specs, managed connections and other
+administered objects when using GenericJMSRA to communicate with WebLogic JMS.
+</p>
+
+<h3>ResourceAdapter properties</h3>
+
+<p>These properties are used to configure the resource adapter itself when it is deployed, 
+and can be specified using the <tt>create-resource-adapter-config</tt> command.</p>
+
+<p>
+<table border="1" width="1000px">
+  <col width="89*"> <col width="55*"> <col width="53*"> <col width="59*"> 
+  <thead> 
+    <tr>
+    <th>
+    <p>Property Name</p>
+    </th>
+    <th>
+    <p>Required value</p>
+    </th>
+    <th>
+    <p>Default Value</p>
+    </th>
+    <th>
+    <p>Description</p>
+    </th>
+    </tr>
+  </thead> 
+  <tbody>
+    <tr>
+      <td><tt>ProviderIntegrationMode</tt></td>
+      <td><tt>jndi</tt></td>
+      <td><tt>javabean</tt></td>
+      <td>Specifies that connection factories and destinations in Glassfish's JNDI store will be configured by the user to
+      refer to connection factories and destinations in WebLogic's JNDI store. See below for details.</td>
+    </tr>
+    <tr>
+      <td><tt>DeliveryType</tt></td>
+      <td><tt>Synchronous</tt></td>
+      <td><tt>Asynchronous</tt></td>
+      <td>Specifies whether a MDB should use a <tt>ConnectionConsumer</tt> (<tt>Asynchronous</tt>) or <tt>consumer.receive()</tt> (<tt>Synchronous</tt>) 
+      when consuming messages. Set to <tt>Synchronous</tt> when using WebLogic JMS.
+      </td>
+    </tr>
+    <tr>
+      <td><tt>SupportsXA</tt></td>
+      <td><tt>false</tt></td>
+      <td><tt>false</tt></td>
+      <td>Specifies whether the jms client supports XA or not. Set to <tt>false</tt> when using WebLogic JMS</td>
+    </tr>
+    <tr>
+      <td><tt>JndiProperties</tt></td>
+      <td><tt>java.naming.factory.initial=weblogic.jndi.WLInitialContextFactory,<br>
+      java.naming.provider.url=t3://localhost:7001,<br>
+      java.naming.factory.url.pkgs=weblogic.corba.client.naming</tt><br>
+      (replace <tt>localhost:7001</tt> with <tt>host:port</tt> of WebLogic.)</td>
+      <td>None</td>
+      <td>JNDI properties for connecting to WebLogic JNDI, specified as a comma-reparated list of name=value pairs.
+      </td>
+    </tr>
+    <tr>
+      <td><tt>UserName</tt></td>
+      <td>Name of WebLogic JMS user</td>
+      <td>None</td>
+      <td>Username for use when connecting to WebLogic JMS. May be overridden in ActivationSpec and ManagedConnection.
+      If no username is specified anonymous connections will be used, if permitted</td>
+    </tr>
+    <tr>
+      <td><tt>Password</tt></td>
+      <td>Password corresponding to <tt>UserName</tt></td>
+      <td>None</td><td>
+      <p>Password for use when connecting to WebLogic JMS.May be overridden in ActivationSpec and ManagedConnection.</td>
+    </tr>
+    <tr>
+      <td>LogLevel</td>
+      <td>Desired log level of JDK logger.</td>
+      <td>INFO</td>
+      <td>Used to specify the level of logging.</tt> 
+    </tr>    
+    <tr>
+      <td><tt>CommonSetterMethodName</tt></td>
+      <td>Not used</td>
+      <td>Not used</td>
+      <td>Not used if <tt>ProviderIntegrationMode</tt> is <tt>jndi</tt></td>
+    </tr>    
+    <tr>
+      <td><tt>ConnectionFactoryClassName</tt></td>
+      <td>Not used</td>
+      <td>Not used</td>
+      <td>Not used if <tt>ProviderIntegrationMode</tt> is <tt>jndi</tt></td>
+    </tr>
+    <tr>
+      <td><tt>QueueConnectionFactoryClassName</tt></td>
+      <td>Not used</td>
+      <td>Not used</td>
+      <td>Not used if <tt>ProviderIntegrationMode</tt> is <tt>jndi</tt></td>
+    </tr>
+    <tr>
+      <td><tt>TopicConnectionFactoryClassName</tt></td>
+      <td>Not used</td>
+      <td>Not used</td>
+      <td>Not used if <tt>ProviderIntegrationMode</tt> is <tt>jndi</tt></td>
+    </tr>   
+    <tr>
+      <td><tt>XAConnectionFactoryClassName</tt></td>
+      <td>Not used</td>
+      <td>Not used</td>
+      <td>Not used if <tt>ProviderIntegrationMode</tt> is <tt>jndi</tt></td>
+    </tr>
+    <tr>
+      <td><tt>XAQueueConnectionFactoryClassName</tt></td>
+      <td>Not used</td>
+      <td>Not used</td>
+      <td>Not used if <tt>ProviderIntegrationMode</tt> is <tt>jndi</tt></td>
+    </tr>
+    <tr>
+      <td><tt>XATopicConnectionFactoryClassName</tt></td>
+      <td>Not used</td>
+      <td>Not used</td>
+      <td>Not used if <tt>ProviderIntegrationMode</tt> is <tt>jndi</tt></td>
+    </tr>   
+    <tr>
+      <td><tt>ConnectionFactoryProperties</tt></td>
+      <td>Not used</td>
+      <td>Not used </td>
+      <td>Not used if <tt>ProviderIntegrationMode</tt> is <tt>jndi</tt></td>
+    </tr>          
+    <tr>
+      <td><tt>UnifiedDestinationClassName</tt></td>
+      <td>Not used</td>
+      <td>Not used</td>
+      <td>Not used if <tt>ProviderIntegrationMode</tt> is <tt>jndi</tt></td>
+    </tr>
+    <tr>
+      <td><tt>QueueClassName</tt></td>
+      <td>Not used</td>
+      <td>Not used</td>
+      <td>Not used if <tt>ProviderIntegrationMode</tt> is <tt>jndi</tt></td>
+    </tr>
+    <tr>
+      <td><tt>TopicClassName</tt></td>
+      <td>Not used</td>
+      <td>Not used</td>
+      <td>Not used if <tt>ProviderIntegrationMode</tt> is <tt>jndi</tt></td>
+    </tr>
+    <tr>
+    <td>RMPolicy</td>
+    <td>Not used</td>
+    <td>Not used</td>
+    <td>Not used if <tt>SupportXA</tt> is <tt>false</tt></td>
+    </tr>        
+  </tbody>
+</table> 
+
+<h3>Destination properties</h3>
+
+<p>Destination (queue or topic) objects are created in the Glassfish JNDI store using the 
+Glassfish admin console or the <tt>asadmin connector-admin-object</tt> command. 
+All the properties that can be set on a resource adapter configuration can be overridden by setting them on a destination object. 
+The properties specific to destination objects are listed in the following table.
+</p>
+
+<table border="1" width="1000px">
+  <col width="64*"> <col width="64*"> <col width="64*"> <col width="64*"> 
+  <thead> 
+    <tr>
+      <th>Property Name</th>
+      <th>Required value</th>
+      <th>Default Value</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><tt>DestinationJndiName</tt></td>
+      <td>A valid JNDI name</td>
+      <td>None</td>
+      <td>JNDI name of destination object in the Glassfish JNDI store. 
+      This destination object should be configured to refer to the "real" destination in the WebLogic JNDI store. 
+      See below for details.      
+      </td>
+    </tr>
+    <tr>
+      <td><tt>DestinationProperties</tt></td>
+      <td>Not used</td>
+      <td>None</td>
+      <td>Not used if <tt>ProviderIntegrationMode</tt> is <tt>jndi</tt></td>
+    </tr>
+  </tbody>
+</table>
+
+
+<h3>ManagedConnectionFactory Properties</h3>
+
+<p>ManagedConnectionFactory objects are created in the Glassfish JNDI store using the
+Glassfish admin console or the <tt>asadmin connector-connection-pool</tt> command. 
+All the properties that can be set on a resource adapter configuration can be overridden by setting them on a destination object. 
+The properties specific to ManagedConnectionFactory objects are listed in the following table.
+</p>
+
+
+<table border="1" width="1000px">
+  <col width="64*"> <col width="64*"> <col width="64*"> <col width="64*"> 
+  <thead> 
+    <tr>
+      <th>Property Name</th>
+      <th>Required value</th>
+      <th>Default Value</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><tt>ClientID</tt></td>
+      <td>A valid client ID</td>
+      <td>None</td>
+      <td>JMS ClientID</td>
+    </tr>
+    <tr>
+      <td><tt>ConnectionFactoryJndiName</tt></td>
+      <td>A valid JNDI Name</td>
+      <td>None</td>
+      <td>JNDI name of connection factory in the Glassfish JNDI store.
+      This connection factory should be configured to refer to 
+      the "real" connection factory in the WebLogic JNDI store.
+      See below for details.</td>
+    </tr>    
+    <tr>
+      <td><tt>ConnectionValidationEnabled</tt></td>
+      <td><tt>true</tt> or <tt>false</tt></td>
+      <td><tt>FALSE</tt></td>
+      <td>If set to <tt>true</tt>, the resource adapter will use an exception
+		listener to catch any connection exception and will send a
+		<tt>CONNECTION_ERROR_OCCURED</tt> event to application server. 
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>ActivationSpec Configuration</h3>
+
+<p>An ActivationSpec is a set of properties that configures a MDB. 
+It is defined either in the EJB's Sun-specific deployment descriptor <tt>sun-ejb-jar.xml</tt> using <tt>activation-config-property</tt> elements
+or in the MDB itself using annotation. 
+All the resource adapter properties listed in the table above can be
+overridden in a ActivationSpec. Additional properties
+available only to a ActivationSpec are given below.
+</p>
+
+<table border="1" width="1000px">
+  <col width="64*"> <col width="64*"> <col width="64*"> <col width="64*"> 
+  <thead> 
+    <tr>
+      <th>Property Name</th>
+      <th>Required value</th>
+      <th>Default Value</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><tt>MaxPoolSize</tt></td>
+      <td>An integer</td>
+      <td>8</td>
+      <td>Maximum number of threads used internally by
+      resource adapter for concurrent message delivery. This should
+      be equal to maximum pool size of MDB objects. 
+      <p>Only used for queues;
+      ignored for topics, when a value of 1 is always used.
+      </td>
+    </tr>
+    <tr>
+      <td><tt>MaxWaitTime</tt></td>
+      <td>Not used</td>
+      <td>Not used</td>
+      <td>Not used if <tt>DeliveryType</tt> is <tt>Synchronous</tt></td>
+    </tr>      
+    <tr>
+      <td><tt>SubscriptionDurability</tt></td>
+      <td><tt>Durable</tt> or <tt>Non-Durable</tt></td>
+      <td><tt>Non-Durable</tt></td>
+      <td>Only used for topics. Specifies whether the subscription is durable or non-durable.</td>
+    </tr>
+    <tr>
+      <td><tt>SubscriptionName</tt></td>
+      <td>&nbsp;</td>
+      <td>None</td>
+      <td>Only used for topics when <tt>SubscriptionDurability</tt> is <tt>Durable</tt>. Specifies the name of the durable subscription.</td>
+    </tr>
+    <tr>
+      <td><tt>MessageSelector</tt></td>
+      <td>A valid message selector</td>
+      <td>None</td>
+      <td>JMS message selector</td>
+    </tr>
+    <tr>
+      <td><tt>ClientID</tt></td>
+      <td>A valid client ID</td>
+      <td>None</td>
+      <td>JMS ClientID</td>
+    </tr>
+    <tr>
+      <td><tt>ConnectionFactoryJndiName</tt></td>
+      <td>A valid JNDI Name</td>
+      <td>None</td>
+      <td>JNDI name of connection factory in the Glassfish JNDI store. 
+      This connection factory should be configured to refer to 
+      the "real" connection factory in the WebLogic JNDI store. 
+      See below for details.</td>
+    </tr>
+    <tr>
+      <td><tt>DestinationJndiName</tt></td>
+      <td>A valid JNDI Name</td>
+      <td>None</td>
+      <td>JNDI name of destination in the Glassfish JNDI store.
+      This destination should be configured to refer to 
+      the "real" destination in the WebLogic JNDI store.
+      See below for details.</td>
+    </tr>
+    <tr>
+      <td><tt>DestinationType</tt></td>
+      <td><tt>javax.jms.Queue</tt> or <tt>javax.jms.Topic</tt></td>
+      <td>None</td>
+      <td>Specifies whether the configured <tt>DestinationJndiName</tt> refers to a queue or topic </td>
+    </tr>
+    <tr>
+      <td><tt>DestinationProperties</tt></td>
+      <td>Not used</td>
+      <td>Not used</td>
+      <td>Not used if <tt>ProviderIntegrationMode</tt> is <tt>jndi</tt></td>
+    </tr>
+    <tr>
+      <td><tt>RedeliveryAttempts</tt></td>
+      <td>Not supported</td>
+      <td>Not supported</td>
+      <td>Not supported when <tt>SupportsXA</tt> is <tt>false</tt></td>
+    </tr>
+    <tr>
+      <td><tt>RedeliveryInterval</tt></td>
+      <td>Not supported</td>
+      <td>Not supported</td>
+      <td>Not supported when <tt>SupportsXA</tt> is <tt>false</tt></td>
+    </tr>    
+    <tr>
+      <td><tt>SendBadMessagesToDMD</tt></td>
+      <td>Not supported</td>
+      <td>Not supported</td>
+      <td>Not supported when <tt>SupportsXA</tt> is <tt>false</tt></td>
+    </tr> 
+    <tr>
+      <td><tt>DeadMessageDestinationJndiName</tt></td>
+      <td>Not supported</td>
+      <td>Not supported</td>
+      <td>Not supported when <tt>SupportsXA</tt> is <tt>false</tt></td>
+    </tr> 
+    <tr>
+      <td><tt>DeadMessageDestinationClassName</tt></td>
+      <td>Not supported</td>
+      <td>Not supported</td>
+      <td>Not supported when <tt>SupportsXA</tt> is <tt>false</tt> (and not in any case used when <tt>ProviderIntegrationMode</tt> is <tt>jndi</tt>)</td>
+    </tr> 
+    <tr>
+      <td><tt>DeadMessageDestinationProperties</tt></td>
+      <td>Not supported</td>
+      <td>Not supported</td>
+      <td>Not supported when <tt>SupportsXA</tt> is <tt>false</tt> (and not in any case used when <tt>ProviderIntegrationMode</tt> is <tt>jndi</tt>)</td>
+    </tr> 
+    <tr>
+      <td><tt>DeadMessageConnectionFactoryJndiName</tt></td>
+      <td>Not supported</td>
+      <td>Not supported</td>
+      <td>Not supported when <tt>SupportsXA</tt> is <tt>false</tt></td>
+    </tr> 
+    <tr>
+      <td><tt>DeadMessageDestinationType</tt></td>
+      <td>Not supported</td>
+      <td>Not supported</td>
+      <td>Not supported when <tt>SupportsXA</tt> is <tt>false</tt></td>
+    </tr>
+    <tr>
+      <td><tt>ReconnectAttempts</tt></td>
+      <td>integer</td>
+      <td>0</td>
+      <td>Number of times a reconnect will be attempted in case
+      exception listener catches an error on connection</td>
+    </tr>
+    <tr>
+      <td><tt>ReconnectInterval</tt></td>
+      <td>Time in seconds</td>
+      <td>0</td>
+      <td>Interval between reconnection attempts</td>
+    </tr>  
+  </tbody>
+</table>
+
+
+<h2>Limitations</h2>
+
+<h3>XA transactions</h3>
+
+<p>
+WebLogic JMS does not support the optional JMS "Chapter 8" interfaces for XA transactions in a form suitable for use outside WebLogic server.
+Therefore the GenericJMSRA resource adapter configuration must set the property <tt>SupportsXA</tt> to <tt>false</tt>.
+
+<h4>Using a MDB to receive messages: Container-managed transactions (CMT)</h4>
+
+<ul>
+<li>If container-managed transactions are used, the transactional attribute of a MDB should be set to <tt>NotSupported</tt>. No transaction will be started. 
+Messages will be received in a non-transacted session with an acknowledgeMode of <tt>AUTO_ACKNOWLEDGE</tt>.
+<li>A transactional attribute is <tt>Required</tt> should not be used; MDB activation will fail with an exception: <tt>javax.resource.ResourceException: MDB is configured to use container managed transaction. But SupportsXA is configured to false in the resource adapter.</tt>
+</ul>
+
+<p>The remaining transactional attributes are normally considered inappropriate for use with a MDB. If used, the following behaviour will arise:
+<ul>
+<li>If the transactional attribute is <tt>RequiresNew</tt>  then MDB activation will fail with an exception: <tt> javax.resource.ResourceException: MDB is configured to use container managed transaction. But SupportsXA is configured to false in the resource adapter.</tt>
+<li>If the transactional attribute is <tt>Mandatory</tt>, the MDB can be activated but a <tt>TransactionRequiredException</tt> (or similar) will always be thrown by the server.
+<li>If the transactional attribute is <tt>Supports</tt>,  then no transaction will be started and the MDB will work as if <tt>NotSupported</tt> had been used.
+<li>If the transactional attribute is <tt>Never</tt>,  then  no transaction will be started and the MDB will work as if <tt>NotSupported</tt> had been used.
+</ul>
+
+<h4>Using a MDB to receive messages: Bean-managed transactions (BMT)</h4>
+
+<ul>
+<li>If bean-managed transactions are configured then in accordance with the EJB spec any <tt>UserTransaction</tt> started by the bean will have no effect on the consumption of messages..
+<li>Messages will be received in a non-transacted session with an acknowledgeMode of <tt>AUTO_ACKNOWLEDGE</tt>.
+</ul>
+
+<h4>Using a MDB or EJB to send messages: Container-managed transactions (CMT)</h4>
+
+<p>
+When sending messages from a MDB or EJB, and CMT is being used, the connection pool's <tt>transaction-support</tt> property should be set to either 
+<tt>LocalTransaction</tt> or <tt>NoTransaction</tt>.
+If the default value of <tt>XATransaction</tt> is used an exception will be thrown at runtime when <tt>createConnection()</tt> is called.
+This is the case irrespective of the transactional attribute of the MDB or EJB. Note that although
+MDBs must have their transactional attribute set to <tt>NotSupported</tt> as specified above, whereas there are no restrictions for EJBs.
+
+<p>
+If there is no transaction in progress within the bean method (e.g. <tt>notSupported</tt> is being used)
+then it doesn't make any difference whether the connection pool's <tt>transaction-support</tt> property 
+is set to <tt>LocalTransaction</tt> or <tt>NoTransaction</tt>;
+the transactional behaviour will be determined by the arguments to <tt>createSession()</tt>.
+If you want the outbound message to be sent without a transaction, call <tt>createSession(false, ...)</tt>.
+If you want the outbound message to be sent in a local transaction call
+<tt>createSession(true, Session.SESSION_TRANSACTED)</tt>, remembering to call <tt>session.commit()</tt> or  <tt>session.rollback()</tt> after the message is sent.</tt>.  
+<p>
+If there is a transaction in progress within the bean method then
+setting the connection pool's <tt>transaction-support</tt> property 
+to <tt>LocalTransaction</tt> or <tt>NoTransaction</tt> gives different results: 
+If it is set to  <tt>NoTransaction</tt> then a non-transacted session will be used.
+If it is set to <tt>LocalTransaction</tt> then a (local, non-XA) transacted session will be used which will be committed or rolled back 
+when the <tt>UserTransaction</tt> is committed or rolled back. In this case, calling <tt>session.commit()</tt> or  <tt>session.rollback()</tt> will cause an exception.
+
+
+<h4>Using an EJB to send messages: Container-managed transactions (CMT)</h4>
+
+If an EJB (session or entity bean) is used to send messages then by default an outbound connection will attempt to use an XA transaction even if the transactional
+attribute is set to <tt>NotSupported</tt>.
+This is because by default its connection pool's <tt>transaction-support</tt> property is <tt>XATransaction</tt>.
+When the MDB calls <tt>createConnection()</tt>, GenericJMSRA will detect the attempt to create an XA connection and throw an exception with the message
+<tt>SupportsXA is configured as false Dont use the resource adapter in XA mode</tt>.
+
+
+<h4>Using a MDB or EJB to send messages: Bean-managed transactions (BMT)</h4>
+
+<p>When sending messages from a MDB, and BMT is being used, then as with the CMT case 
+the connection pool's <tt>transaction-support</tt> property should be set to either <tt>LocalTransaction</tt> or <tt>NoTransaction</tt>.
+If the default value of <tt>XATransaction</tt> is used an exception will be thrown at runtime when <tt>createConnection()</tt> is called.
+This is the case irrespective of whether a <tt>UserTransaction</tt> is in progress. 
+<p>
+If there is no <tt>UserTransaction</tt> in progress then it doesn't make any difference whether the connection pool's <tt>transaction-support</tt> property 
+is set to <tt>LocalTransaction</tt> or <tt>NoTransaction</tt>;
+the transactional behaviour will be determined by the arguments to <tt>createSession()</tt>.
+If you want the outbound message to be sent without a transaction, call <tt>createSession(false, ...)</tt>.
+If you want the outbound message to be sent in a local transaction call
+<tt>createSession(true, Session.SESSION_TRANSACTED)</tt>, remembering to call <tt>session.commit()</tt> or  <tt>session.rollback()</tt> after the message is sent.</tt>.  
+<p>
+If there is a <tt>UserTransaction</tt> in progress then
+setting the connection pool's <tt>transaction-support</tt> property 
+to <tt>LocalTransaction</tt> or <tt>NoTransaction</tt> gives different results: 
+If it is set to  <tt>NoTransaction</tt> then a non-transacted session will be used.
+If it is set to <tt>LocalTransaction</tt> then a (local, non-XA) transacted session will be used which will be committed or rolled back 
+when the <tt>UserTransaction</tt> is committed or rolled back. In this case, calling <tt>session.commit()</tt> or  <tt>session.rollback()</tt> will cause an exception.
+
+<h4>Other consequences of setting <tt>SupportsXA</tt> to <tt>false</tt></h4>
+
+<p>
+To be completed
+
+<h3>Asynchronous receipt of messages in a MDB</h3>
+
+WebLogic JMS does not support the optional JMS "Chapter 8" interfaces for "Concurrent Processing of a Subscription's Messages" 
+(<tt>ServerSession</tt>, <tt>ServerSessionPool</tt> and <tt>ConnectionConsumer</tt>) in a form suitable for use outside WebLogic server.
+Therefore the GenericJMSRA resource adapter configuration must set the property <tt>DeliveryType</tt> to <tt>Synchronous</tt>.
+
+<p>
+This affects the way in which MDBs consume messages from a queue or topic as follows:
+
+<ul>
+<li>
+When messages are being received from a queue, 
+each MDB instance will have its own session and consumer, and
+will consume messages by repeatedly calling <tt>receive(timeout)</tt>.
+This allows the use of a pool of MDBS to process messages from the queue.
+ 
+<li>
+<p>When messages are being received from a topic, only one MDB instance will be used
+irrespective of the configured pool size. This means that a pool of multiple MDBs cannot be used to
+share the load of processing messages, which may reduce the rate at which messages can be received and processed.
+<p>This restriction is a consequence of the semantics of synchronously consuming messages from topics in JMS: 
+In the case of non-durable topic subscriptions, each consumer receives a copy of all the messages on the topic,
+so using multiple consumers would result in multiple copied of each message being received rather than allowing the load to be shared
+amongst the multiple MDBs. 
+In the case of durable topic subscriptions, only one active consumer is allowed to exist at a time.
+</ul>
+
+<h2>
+
+
+
+</body>
+</html>
