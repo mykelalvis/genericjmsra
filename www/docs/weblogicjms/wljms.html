@@ -14,6 +14,195 @@ Relates to GenericJMSRA version 2.1</br>
 <p>
 This is a description of how to use GenericJMSRA to allow a application running in Glassfish Server to exchange messages with WebLogic JMS. 
 
+<h2>Quick start guide</h2>
+
+The following steps were tested with:
+
+<ul>
+<li>GenericJMSRA 2.1 resource adapter
+<li>WebLogic Server 11g (as the JMS provider) 
+<li>Glassfish 2.1.1 and Glassfish 3.1 (as the application server)
+</ul>
+
+<h4>Create the resource adapter configuration</h4>
+
+<p>Before you deploy the resource adapter you should create a resource adapter configuration in Glassfish. 
+You can do this using either the Glassfish admin console or the <tt>asadmin</tt> command. Here's an example using <tt>asadmin</tt>:
+<pre
+>asadmin create-resource-adapter-config --host localhost --port 4848 --property SupportsXA=false:DeliveryType=Synchronous:ProviderIntegrationMode=jndi:JndiProperties=java.naming.factory.initial\=weblogic.jndi.WLInitialContextFactory,java.naming.provider.url\=t3\://localhost\:7001,java.naming.factory.url.pkgs\=weblogic.corba.client.naming genericra
+</pre>
+
+<p>This creates a resource adapter configuration with the name <tt>genericra</tt>. 
+It is recommended you stick with this name.
+The resource adapter configuration is configured with the following properties
+</p>
+
+<table border="1" width="1000px">
+<tr><th>Property></th><th>Value</th></tr>
+<tr><td><tt>SupportsXA</tt></td><td><tt>false</tt></td></tr>
+<tr><td><tt>DeliveryType</tt></td><td><tt>Synchronous</tt></td></tr>
+<tr><td><tt>ProviderIntegrationMode</tt></td><td><tt>jndi</tt></td></tr>
+<tr><td><tt>JndiProperties</tt></td><td><tt>java.naming.factory.initial\=weblogic.jndi.WLInitialContextFactory,java.naming.provider.url\=t3\://localhost\:7001,java.naming.factory.url.pkgs\=weblogic.corba.client.naming</tt></td></tr>
+</table>
+
+<p>You should use the same values for <tt>SupportsXA</tt>, <tt>DeliveryType</tt> and <tt>ProviderIntegrationMode</tt> as are used here.
+
+<p><tt>JndiProperties</tt> should be set to a list of JNDI properties needed for connecting to WebLogic JNDI. 
+They are specified as a comma-reparated list of name=value pairs. 
+When using <tt>asadmin</tt> you need need to escape each <tt>=</tt> and any <tt>:</tt> characters by prepending a <tt>\</tt>.
+
+<p>For a description of these properties, and of other properties that may be configured, see the table "Resource Adapter properties" below.
+
+<h4>Deploy the resource adapter</h4>
+
+After you've created the resource adapter configuration you can you can deploy the resource adapter using either the Glassfish admin console or the <tt>asadmin</tt> command. Here's an example using <tt>asadmin</tt>:
+
+<pre>
+asadmin deploy --port=4848 --target server genericra.rar
+</pre>
+
+<p>
+(Replace <tt>genericra.rar</tt> with the fully-qualified path to the file as appropriate.)
+
+<p>This deploys the resource adapter. It is automatically given the name <tt>genericra</tt>, which is obtained from the name of the <tt>rar</tt> file.
+This should match the name used when deploying the resource adapter config above. It is recommended you stick with the name <tt>genericra</tt> used by default.
+
+<h4>Configuring a MDB to receive messages</h4>
+
+<p>This example shows you how to configure J2EE 1.4-style MDB that does not use annotations, which means that all configuration
+information is defined in two deployment descriptor files, the deployment descriptor <tt>ejb-jar.xml</tt> and the sun-specific 
+<tt>sun-ejb-jar.xml</tt>. 
+
+<p>When using a JavaEE 5 application server such as Glassfish 2.1.1 or a JavaEE 6 application server such as Glassfish 3.1
+you also have the option of defining this configuration information in annotations. This is not described here.
+
+<p>To configure a MDB to receive messages from WebLogic JMS, you need to configure the two deployment descriptor files as follows:
+
+<p>Deployment descriptor <tt>ejb-jar.xml</tt>:
+
+<pre>
+&lt;ejb-jar>
+  &lt;enterprise-beans>
+    &lt;message-driven>
+      &lt;ejb-name>SimpleMessageEJB&lt;/ejb-name>
+      &lt;ejb-class>test.simple.queue.ejb.SimpleMessageBean&lt;/ejb-class>
+      &lt;transaction-type>Container&lt;/transaction-type>
+    &lt;/message-driven>
+  &lt;/enterprise-beans>
+  &lt;assembly-descriptor>
+    &lt;container-transaction>
+      &lt;method>
+        &lt;ejb-name>SimpleMessageEJB&lt;/ejb-name>
+        &lt;method-name>onMessage&lt;/method-name>
+        &lt;method-params>
+          &lt;method-param>javax.jms.Message&lt;/method-param>
+        &lt;/method-params>
+      &lt;/method>
+      &lt;trans-attribute><b>NotSupported&lt;</b>/trans-attribute>
+    &lt;/container-transaction>
+  &lt;/assembly-descriptor>
+&lt;/ejb-jar>
+</pre>
+
+<p>The significant thing to note is that if container-managed transactions are configured then
+the transactional attribute must be set to <tt>NotSupported</tt>. For more information, see the section "Limitations" below.
+
+<P>Sun-specific deployment descriptor <tt>sun-ejb-jar.xml</tt>:
+
+<pre>
+&lt;sun-ejb-jar>
+  &lt;enterprise-beans>
+    &lt;ejb>
+      &lt;ejb-name>SimpleMessageEJB&lt;/ejb-name>
+      &lt;mdb-resource-adapter>
+        &lt;resource-adapter-mid><b>genericra&lt;</b>/resource-adapter-mid>
+        &lt;activation-config>
+            &lt;activation-config-property>
+              &lt;activation-config-property-name><b>ConnectionFactoryJndiName&lt;</b>/activation-config-property-name>
+              &lt;activation-config-property-value><b>jms/inboundQueueFactory&lt;</b>/activation-config-property-value>
+            &lt;/activation-config-property>
+            &lt;activation-config-property>
+              &lt;activation-config-property-name><b>DestinationJndiName&lt;</b>/activation-config-property-name>
+              &lt;activation-config-property-value><b>jms/inboundQueue&lt;</b>/activation-config-property-value>
+            &lt;/activation-config-property>
+        &lt;/activation-config>
+      &lt;/mdb-resource-adapter>
+    &lt;/ejb>
+  &lt;/enterprise-beans>
+&lt;/sun-ejb-jar>
+</pre>
+
+<p>The element <tt>&lt;resource-adapter-mid>genericra&lt;/resource-adapter-mid></tt> is used to specify the resource adapter 
+and resource adapter config that was deployed earlier. It is recommended you stick to <tt>genericra</tt> as is used here.
+
+<p>The <tt>activation-config</tt> element in <tt>sun-ejb-jar.xml</tt> is the one which defines how and where
+the MDB receives messages. 
+
+<ul>
+<li>
+<p>The property <tt>ConnectionFactoryJndiName</tt> must be set to the
+JNDI name of the connection factory in the WebLogic JNDI store that will be used to receive messages. 
+<li>
+<p>The property <tt>DestinationJndiName</tt> must be set to the
+JNDI name of the destination (the queue or topic from which messages will be consumed) in the WebLogic JNDI store.
+The user should use appropriate WebLogic tools (such as the WebLogic admin console) 
+</ul>
+
+<p>For other properties that may be configured, see the table "ActivationSpec Configuration" below.
+
+<h4>Accessing connections and destinations directly (e.g. to send a message)</h4>
+
+When configuring a MDB to consume messages from WebLogic JMS your code doesn't need to access the WebLogic JMS connection factory and destination directly. 
+You simply define them in the activation config as shown above. However when configuring an MDB to <em>send</em> messages, or when configuring a EJB, servlet or application
+client to either send or receive messages, your code will need to obtain these objects using a JNDI lookup. 
+
+<p>The following example shows you how to lookup these objects using J2EE 1.4-style JNDI lookups. 
+(When using a JavaEE 5 application server such as Glassfish 2.1.1 or a JavaEE 6 application server such as Glassfish 3.1
+you also have the option of performing these lookups declaratively using annotations. This is not described here.)
+
+<p>The following code looks up a connection factory with the JNDI name <tt>jms/MyQCFactory</tt> and a queue with the name <tt>jms/outboundQueue</tt>
+from the <em>Glassfish</em> JNDI store:
+
+<pre>
+   Context initialContect  = new InitialContext();
+   QueueConnectionFactoryqueueConnectionFactory = (QueueConnectionFactory) jndiContext.lookup("java:comp/env/jms/MyQCFactory");
+   Queue queue = (Queue) jndiContext.lookup("java:comp/env/jms/outboundQueue");
+</pre>
+
+<p>In accordance with standard JavaEE requirements, these resources need to be declared in the deployment descriptor for the MDB, EJB
+or other component. For example:
+
+<pre>
+&lt;ejb-jar>
+  &lt;enterprise-beans>
+    &lt;session>
+      . . .
+      &lt;resource-env-ref>
+        &lt;resource-env-ref-name>jms/QCFactory&lt;/resource-env-ref-name>
+	    &lt;resource-env-ref-type>javax.jms.QueueConnectionFactory&lt;/resource-env-ref-type>
+      &lt;/resource-env-ref>
+      &lt;resource-env-ref>
+        &lt;resource-env-ref-name>jms/outboundQueue&lt;/resource-env-ref-name>
+	    &lt;resource-env-ref-type>javax.jms.Queue&lt;/resource-env-ref-type>
+      &lt;/resource-env-ref>
+ </pre>
+
+Note that the resources used are Glassfish resources, not WebLogic JMS resources. 
+For every connection factory or destination that you want to use in the WebLogic JMS JNDI store, 
+you need to create a corresponding connection factory or destination in the GlassFish JNDI store
+and configure the Glassfish object to point to the corresponding  WebLogic JMS object.
+
+To create a Glassfish connection factory and configure it to refer to a corresponding  WebLogic JMS connection factory:
+
+ <pre>
+asadmin create-connector-connection-pool --host localhost --port 4848 --raname genericra --connectiondefinition javax.jms.QueueConnectionFactory --target server --transactionsupport LocalTransaction --property ConnectionFactoryJndiName=jms/WLOutboundQueueFactory qcpool
+asadmin create-connector-resource --host localhost --port 4848 --poolname qcpool --target server jms/QCFactory
+</pre>
+
+<p>These commands together creates a connection factory in Glassfish with the JNDI name <tt>jms/outboundQueueFactory</tt> which
+and a corresponding connection pool <tt>qcpool</tt>. The pool is configured with the following 
+
+
 <h2>Configuration properties</h2>
 
 <p>
@@ -51,7 +240,7 @@ and can be specified using the <tt>create-resource-adapter-config</tt> command.<
       <td><tt>jndi</tt></td>
       <td><tt>javabean</tt></td>
       <td>Specifies that connection factories and destinations in Glassfish's JNDI store will be configured by the user to
-      refer to connection factories and destinations in WebLogic's JNDI store. See below for details.</td>
+      refer to connection factories and destinations in WebLogic's JNDI store.</td>
     </tr>
     <tr>
       <td><tt>DeliveryType</tt></td>
@@ -196,7 +385,6 @@ The properties specific to destination objects are listed in the following table
       <td>None</td>
       <td>JNDI name of destination object in the Glassfish JNDI store. 
       This destination object should be configured to refer to the "real" destination in the WebLogic JNDI store. 
-      See below for details.      
       </td>
     </tr>
     <tr>
@@ -242,7 +430,7 @@ The properties specific to ManagedConnectionFactory objects are listed in the fo
       <td>JNDI name of connection factory in the Glassfish JNDI store.
       This connection factory should be configured to refer to 
       the "real" connection factory in the WebLogic JNDI store.
-      See below for details.</td>
+      </td>
     </tr>    
     <tr>
       <td><tt>ConnectionValidationEnabled</tt></td>
@@ -259,7 +447,7 @@ The properties specific to ManagedConnectionFactory objects are listed in the fo
 <h3>ActivationSpec Configuration</h3>
 
 <p>An ActivationSpec is a set of properties that configures a MDB. 
-It is defined either in the EJB's Sun-specific deployment descriptor <tt>sun-ejb-jar.xml</tt> using <tt>activation-config-property</tt> elements
+It is defined either in the MJB's Sun-specific deployment descriptor <tt>sun-ejb-jar.xml</tt> using <tt>activation-config-property</tt> elements
 or in the MDB itself using annotation. 
 All the resource adapter properties listed in the table above can be
 overridden in a ActivationSpec. Additional properties
@@ -325,7 +513,7 @@ available only to a ActivationSpec are given below.
       <td>JNDI name of connection factory in the Glassfish JNDI store. 
       This connection factory should be configured to refer to 
       the "real" connection factory in the WebLogic JNDI store. 
-      See below for details.</td>
+      </td>
     </tr>
     <tr>
       <td><tt>DestinationJndiName</tt></td>
@@ -334,7 +522,7 @@ available only to a ActivationSpec are given below.
       <td>JNDI name of destination in the Glassfish JNDI store.
       This destination should be configured to refer to 
       the "real" destination in the WebLogic JNDI store.
-      See below for details.</td>
+      </td>
     </tr>
     <tr>
       <td><tt>DestinationType</tt></td>
@@ -412,14 +600,16 @@ available only to a ActivationSpec are given below.
   </tbody>
 </table>
 
-
 <h2>Limitations</h2>
 
-<h3>XA transactions</h3>
+<p>Due to the nature of the WebLogic JMS client there are a number of limitations in the way in which it can be used with GenericJMSRA.
+
+<h3>No support for XA transactions</h3>
 
 <p>
 WebLogic JMS does not support the optional JMS "Chapter 8" interfaces for XA transactions in a form suitable for use outside WebLogic server.
 Therefore the GenericJMSRA resource adapter configuration must set the property <tt>SupportsXA</tt> to <tt>false</tt>.
+This has a number of implications for the way in which applications may be used. These are described below.
 
 <h4>Using a MDB to receive messages: Container-managed transactions (CMT)</h4>
 
@@ -447,11 +637,11 @@ Messages will be received in a non-transacted session with an acknowledgeMode of
 <h4>Using a MDB or EJB to send messages: Container-managed transactions (CMT)</h4>
 
 <p>
-When sending messages from a MDB or EJB, and CMT is being used, the connection pool's <tt>transaction-support</tt> property should be set to either 
+When sending messages from a MDB or EJB, and container-managed transactions are being used, the connection pool's <tt>transaction-support</tt> property should be set to either 
 <tt>LocalTransaction</tt> or <tt>NoTransaction</tt>.
 If the default value of <tt>XATransaction</tt> is used an exception will be thrown at runtime when <tt>createConnection()</tt> is called.
-This is the case irrespective of the transactional attribute of the MDB or EJB. Note that although
-MDBs must have their transactional attribute set to <tt>NotSupported</tt> as specified above, whereas there are no restrictions for EJBs.
+This is the case irrespective of the transactional attribute of the MDB or EJB. Note that 
+MDBs must have their transactional attribute set to <tt>NotSupported</tt> as specified above, whereas an EJB may use any transactional attribute.
 
 <p>
 If there is no transaction in progress within the bean method (e.g. <tt>notSupported</tt> is being used)
@@ -462,7 +652,7 @@ If you want the outbound message to be sent without a transaction, call <tt>crea
 If you want the outbound message to be sent in a local transaction call
 <tt>createSession(true, Session.SESSION_TRANSACTED)</tt>, remembering to call <tt>session.commit()</tt> or  <tt>session.rollback()</tt> after the message is sent.</tt>.  
 <p>
-If there is a transaction in progress within the bean method then
+If there is a transaction in progress within the bean method (which will only be possible for EJBs) then
 setting the connection pool's <tt>transaction-support</tt> property 
 to <tt>LocalTransaction</tt> or <tt>NoTransaction</tt> gives different results: 
 If it is set to  <tt>NoTransaction</tt> then a non-transacted session will be used.
@@ -470,18 +660,9 @@ If it is set to <tt>LocalTransaction</tt> then a (local, non-XA) transacted sess
 when the <tt>UserTransaction</tt> is committed or rolled back. In this case, calling <tt>session.commit()</tt> or  <tt>session.rollback()</tt> will cause an exception.
 
 
-<h4>Using an EJB to send messages: Container-managed transactions (CMT)</h4>
-
-If an EJB (session or entity bean) is used to send messages then by default an outbound connection will attempt to use an XA transaction even if the transactional
-attribute is set to <tt>NotSupported</tt>.
-This is because by default its connection pool's <tt>transaction-support</tt> property is <tt>XATransaction</tt>.
-When the MDB calls <tt>createConnection()</tt>, GenericJMSRA will detect the attempt to create an XA connection and throw an exception with the message
-<tt>SupportsXA is configured as false Dont use the resource adapter in XA mode</tt>.
-
-
 <h4>Using a MDB or EJB to send messages: Bean-managed transactions (BMT)</h4>
 
-<p>When sending messages from a MDB, and BMT is being used, then as with the CMT case 
+<p>When sending messages from a MDB, and bean-managed transactions are being used, then as with the CMT case 
 the connection pool's <tt>transaction-support</tt> property should be set to either <tt>LocalTransaction</tt> or <tt>NoTransaction</tt>.
 If the default value of <tt>XATransaction</tt> is used an exception will be thrown at runtime when <tt>createConnection()</tt> is called.
 This is the case irrespective of whether a <tt>UserTransaction</tt> is in progress. 
@@ -500,12 +681,15 @@ If it is set to  <tt>NoTransaction</tt> then a non-transacted session will be us
 If it is set to <tt>LocalTransaction</tt> then a (local, non-XA) transacted session will be used which will be committed or rolled back 
 when the <tt>UserTransaction</tt> is committed or rolled back. In this case, calling <tt>session.commit()</tt> or  <tt>session.rollback()</tt> will cause an exception.
 
-<h4>Other consequences of setting <tt>SupportsXA</tt> to <tt>false</tt></h4>
+<h4>No support for redelivery limits and dead message queue</h4>
 
 <p>
-To be completed
+Due to the lack of XA support when using WebLogic JMS, there is no support for GenericJMSRA's dead message queue feature, 
+in which a message that has been redelivered to a MDB a defined number
+of times is sent to a dead message queue.
+</p>
 
-<h3>Asynchronous receipt of messages in a MDB</h3>
+<h3>Limited support for asynchronous receipt of messages in a MDB</h3>
 
 WebLogic JMS does not support the optional JMS "Chapter 8" interfaces for "Concurrent Processing of a Subscription's Messages" 
 (<tt>ServerSession</tt>, <tt>ServerSessionPool</tt> and <tt>ConnectionConsumer</tt>) in a form suitable for use outside WebLogic server.
