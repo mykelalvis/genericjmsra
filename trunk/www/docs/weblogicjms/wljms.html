@@ -6,7 +6,7 @@
   
     <style type="text/css">
     p {
-      width: 1000px;
+      max-width: 1000px;
     }
   </style>
   
@@ -311,46 +311,43 @@ administered objects when using GenericJMSRA to communicate with WebLogic JMS.
 <p>These properties are used to configure the resource adapter itself when it is deployed, 
 and can be specified using the <tt>create-resource-adapter-config</tt> command.</p>
 
-<table border="1" width="1000px">
-  <col width="24%"><col width="24%"> <col width="24%"> <col width="24%">    
-  <thead> 
+<table border="1" width="100px">
+  
     <tr>
-    <th>
-    <p>Property Name</p>
-    </th>
-    <th>
-    <p>Required value</p>
-    </th>
-    <th>
-    <p>Default Value</p>
-    </th>
-    <th>
-    <p>Description</p>
-    </th>
+    <th>Property Name</th>
+    <th>Required value</th>
+    <th>Default Value</th>
+    <th>Description</th>
     </tr>
-  </thead> 
-  <tbody>
+    
     <tr>
       <td><tt>ProviderIntegrationMode</tt></td>
       <td><tt>jndi</tt></td>
       <td><tt>javabean</tt></td>
-      <td>Specifies that connection factories and destinations in Glassfish's JNDI store will be configured by the user to
-      refer to connection factories and destinations in WebLogic's JNDI store.</td>
+      <td>Specifies that connection factories and destinations<br> 
+      in Glassfish's JNDI store will be configured by the user to<br>
+      refer to connection factories and destinations in WebLogic's<br>
+      JNDI store.</td>
     </tr>
     <tr>
       <td><tt>DeliveryType</tt></td>
       <td><tt>Synchronous</tt></td>
       <td><tt>Asynchronous</tt></td>
-      <td>Specifies whether a MDB should use a <tt>ConnectionConsumer</tt> (<tt>Asynchronous</tt>) or <tt>consumer.receive()</tt> (<tt>Synchronous</tt>) 
-      when consuming messages. Set to <tt>Synchronous</tt> when using WebLogic JMS.
+      <td>Specifies whether a MDB should use a <tt>ConnectionConsumer</tt><br>
+      (<tt>Asynchronous</tt>) or <tt>consumer.receive()</tt> (<tt>Synchronous</tt>)<br> 
+      when consuming messages. <br>
+      Set to <tt>Synchronous</tt> when using WebLogic JMS.
       </td>
     </tr>
+
     <tr>
       <td><tt>SupportsXA</tt></td>
       <td><tt>false</tt></td>
       <td><tt>false</tt></td>
-      <td>Specifies whether the jms client supports XA or not. Set to <tt>false</tt> when using WebLogic JMS</td>
+      <td>Specifies whether the jms client supports XA or not.<br>
+       Set to <tt>false</tt> when using WebLogic JMS</td>
     </tr>
+       
     <tr>
       <td><tt>JndiProperties</tt></td>
       <td><tt>java.naming.factory.initial=weblogic.jndi.WLInitialContextFactory,<br>
@@ -358,21 +355,24 @@ and can be specified using the <tt>create-resource-adapter-config</tt> command.<
       java.naming.factory.url.pkgs=weblogic.corba.client.naming</tt><br>
       (replace <tt>localhost:7001</tt> with <tt>host:port</tt> of WebLogic.)</td>
       <td>None</td>
-      <td>JNDI properties for connecting to WebLogic JNDI, specified as a comma-reparated list of name=value pairs.
+      <td>JNDI properties for connecting to WebLogic JNDI, <br>
+      specified as a comma-reparated list of name=value pairs.
       </td>
     </tr>
     <tr>
       <td><tt>UserName</tt></td>
       <td>Name of WebLogic JMS user</td>
       <td>None</td>
-      <td>Username for use when connecting to WebLogic JMS. May be overridden in ActivationSpec and ManagedConnection.
+      <td>Username for use when connecting to WebLogic JMS. <br>
+      May be overridden in ActivationSpec and ManagedConnection.<br>
       If no username is specified anonymous connections will be used, if permitted</td>
     </tr>
     <tr>
       <td><tt>Password</tt></td>
       <td>Password corresponding to <tt>UserName</tt></td>
       <td>None</td><td>
-      <p>Password for use when connecting to WebLogic JMS.May be overridden in ActivationSpec and ManagedConnection.</td>
+      <p>Password for use when connecting to WebLogic JMS.<br>
+      May be overridden in ActivationSpec and ManagedConnection.</td>
     </tr>
     <tr>
       <td>LogLevel</td>
@@ -709,24 +709,24 @@ This has a number of implications for the way in which applications may be used.
 <h4>Using a MDB to receive messages: Container-managed transactions (CMT)</h4>
 
 <ul>
-<li>If container-managed transactions are used, the transactional attribute of a MDB should be set to <tt>NotSupported</tt>. No transaction will be started. 
+<li><p>If container-managed transactions are used, the transactional attribute of a MDB should be set to <tt>NotSupported</tt>. No transaction will be started. 
 Messages will be received in a non-transacted session with an acknowledgeMode of <tt>AUTO_ACKNOWLEDGE</tt>.
-<li>A transactional attribute is <tt>Required</tt> should not be used; MDB activation will fail with an exception: <tt>javax.resource.ResourceException: MDB is configured to use container managed transaction. But SupportsXA is configured to false in the resource adapter.</tt>
+<li><p>A transactional attribute is <tt>Required</tt> should not be used; MDB activation will fail with an exception: <tt>javax.resource.ResourceException: MDB is configured to use container managed transaction. But SupportsXA is configured to false in the resource adapter.</tt>
 </ul>
 
 <p>The remaining transactional attributes are normally considered inappropriate for use with a MDB. If used, the following behaviour will arise:
 <ul>
-<li>If the transactional attribute is <tt>RequiresNew</tt>  then MDB activation will fail with an exception: <tt> javax.resource.ResourceException: MDB is configured to use container managed transaction. But SupportsXA is configured to false in the resource adapter.</tt>
-<li>If the transactional attribute is <tt>Mandatory</tt>, the MDB can be activated but a <tt>TransactionRequiredException</tt> (or similar) will always be thrown by the server.
-<li>If the transactional attribute is <tt>Supports</tt>,  then no transaction will be started and the MDB will work as if <tt>NotSupported</tt> had been used.
-<li>If the transactional attribute is <tt>Never</tt>,  then  no transaction will be started and the MDB will work as if <tt>NotSupported</tt> had been used.
+<li><p>If the transactional attribute is <tt>RequiresNew</tt>  then MDB activation will fail with an exception: <tt> javax.resource.ResourceException: MDB is configured to use container managed transaction. But SupportsXA is configured to false in the resource adapter.</tt>
+<li><p>If the transactional attribute is <tt>Mandatory</tt>, the MDB can be activated but a <tt>TransactionRequiredException</tt> (or similar) will always be thrown by the server.
+<li><p>If the transactional attribute is <tt>Supports</tt>,  then no transaction will be started and the MDB will work as if <tt>NotSupported</tt> had been used.
+<li><p>If the transactional attribute is <tt>Never</tt>,  then  no transaction will be started and the MDB will work as if <tt>NotSupported</tt> had been used.
 </ul>
 
 <h4>Using a MDB to receive messages: Bean-managed transactions (BMT)</h4>
 
 <ul>
-<li>If bean-managed transactions are configured then in accordance with the EJB spec any <tt>UserTransaction</tt> started by the bean will have no effect on the consumption of messages..
-<li>Messages will be received in a non-transacted session with an acknowledgeMode of <tt>AUTO_ACKNOWLEDGE</tt>.
+<li><p>If bean-managed transactions are configured then in accordance with the EJB spec any <tt>UserTransaction</tt> started by the bean will have no effect on the consumption of messages..
+<li><p>Messages will be received in a non-transacted session with an acknowledgeMode of <tt>AUTO_ACKNOWLEDGE</tt>.
 </ul>
 
 <h4>Using a MDB or EJB to send messages: Container-managed transactions (CMT)</h4>
@@ -786,7 +786,7 @@ of times is sent to a dead message queue.
 
 <h3>Limited support for asynchronous receipt of messages in a MDB</h3>
 
-WebLogic JMS does not support the optional JMS "Chapter 8" interfaces for "Concurrent Processing of a Subscription's Messages" 
+<p>WebLogic JMS does not support the optional JMS "Chapter 8" interfaces for "Concurrent Processing of a Subscription's Messages" 
 (<tt>ServerSession</tt>, <tt>ServerSessionPool</tt> and <tt>ConnectionConsumer</tt>) in a form suitable for use outside WebLogic server.
 Therefore the GenericJMSRA resource adapter configuration must set the property <tt>DeliveryType</tt> to <tt>Synchronous</tt>.
 
@@ -794,12 +794,12 @@ Therefore the GenericJMSRA resource adapter configuration must set the property 
 This affects the way in which MDBs consume messages from a queue or topic as follows:
 
 <ul>
-<li>
+<li><p>
 When messages are being received from a queue, 
 each MDB instance will have its own session and consumer, and
 will consume messages by repeatedly calling <tt>receive(timeout)</tt>.
 This allows the use of a pool of MDBS to process messages from the queue.
- 
+</p> 
 <li>
 <p>When messages are being received from a topic, only one MDB instance will be used
 irrespective of the configured pool size. This means that a pool of multiple MDBs cannot be used to
