@@ -8,13 +8,21 @@
 <h1>Using GenericJMSRA to connect Glassfish to Oracle WebLogic JMS</h1>
 <p>
 Author: Nigel Deakin<br/>
-Date: 15 Sept 2010<br/>
+Date: 6 Oct 2010<br/>
 Relates to GenericJMSRA version 2.1</br>
+
+<h2>Contents</h2>
+
+<p>
+<a href="#quickstartguide">Quick start guide</a><br>
+<a href="#configprops">Configuration properties</a><br>
+<a href="#limitations">Limitations</a><br>
+
 
 <p>
 This is a description of how to use GenericJMSRA to allow a application running in Glassfish Server to exchange messages with WebLogic JMS. 
 
-<h2>Quick start guide</h2>
+<h2><a name="quickstartguide">Quick start guide</h2>
 
 The following steps were tested with:
 
@@ -24,7 +32,36 @@ The following steps were tested with:
 <li>Glassfish 2.1.1 and Glassfish 3.1 (as the application server)
 </ul>
 
-<h4>Create the resource adapter configuration</h4>
+<h3>Deploy the WebLogic JMS client jar in Glassfish</h3>
+
+<p>The first step to allow Glassfish to access WebLogic JMS is to add the WebLogic JMS 11g client jar to the classpath of your running application.
+
+<p>WebLogic JMS provides several different clients for use by standalone applications (i.e. outside of WebLogic itself). 
+These are summarised in the WebLogic documentation <a href="http://download.oracle.com/docs/cd/E14571_01/web.1111/e13717/basics.htm#SACLT122">here</a>.
+
+<p>When connecting from Glassfish you should use the WebLogic Thin T3 client, <tt>wlthint3client.jar</tt>. 
+This can be found in a WebLogic installation in a directory similar to <tt>wls1033_dev/wlserver/server/lib</tt>.
+
+<p><b>Glassfish 2.1.1 or earlier</b>
+
+<p>If you are using Glassfish 2.1.1 or earlier, you need to add this jar to the server classpath by editing <tt>domain.xml</tt>
+and configuring the <tt>&lt;java-config></tt> element's <tt>classpath-suffix</tt> attribute to include a path to <tt>wlthint3client.jar</tt>, 
+as follows: 
+
+<pre>
+&lt;java-config classpath-suffix="C:\Sun\glassfish-2.1.1\lib\wlthint3client.jar" ...
+</pre>
+
+<p><b>Glassfish 3 or later</b>
+
+<p>If you are using Glassfish 3 or later, there is no need to change <tt>domain.xml</tt> but you need to copy <tt>wlthint3client.jar</tt>
+to the directory <tt>glassfish/lib</tt> under your Glassfish installation. 
+
+<p>This makes the jar available to all applications. It is also possible to deploy this jar in a less global manner, so that it is specific to an individual application.
+For information on how to do this please consult the Glassfish documentation. A third alternative is to package this jar within <tt>genericra.rar</tt>
+before you deploy this in Glassfish.
+
+<h3>Create the resource adapter configuration</h3>
 
 <p>Before you deploy the resource adapter you should create a resource adapter configuration in Glassfish. 
 You can do this using either the Glassfish admin console or the <tt>asadmin</tt> command. Here's an example using <tt>asadmin</tt>:
@@ -34,11 +71,12 @@ You can do this using either the Glassfish admin console or the <tt>asadmin</tt>
 
 <p>This creates a resource adapter configuration with the name <tt>genericra</tt>. 
 It is recommended you stick with this name.
-The resource adapter configuration is configured with the following properties
+The resource adapter configuration is configured with the properties specified using the <tt>--properties</tt> argument;
+multiple properties are configured as a colon-separated list of name-value pairs. In this example, the following properties are configured:
 </p>
 
 <table border="1" width="1000px">
-<tr><th>Property></th><th>Value</th></tr>
+<tr><th>Property</th><th>Value</th></tr>
 <tr><td><tt>SupportsXA</tt></td><td><tt>false</tt></td></tr>
 <tr><td><tt>DeliveryType</tt></td><td><tt>Synchronous</tt></td></tr>
 <tr><td><tt>ProviderIntegrationMode</tt></td><td><tt>jndi</tt></td></tr>
@@ -53,7 +91,7 @@ When using <tt>asadmin</tt> you need need to escape each <tt>=</tt> and any <tt>
 
 <p>For a description of these properties, and of other properties that may be configured, see the table "Resource Adapter properties" below.
 
-<h4>Deploy the resource adapter</h4>
+<h3>Deploy the resource adapter</h3>
 
 After you've created the resource adapter configuration you can you can deploy the resource adapter using either the Glassfish admin console or the <tt>asadmin</tt> command. Here's an example using <tt>asadmin</tt>:
 
@@ -67,7 +105,7 @@ asadmin deploy --port=4848 --target server genericra.rar
 <p>This deploys the resource adapter. It is automatically given the name <tt>genericra</tt>, which is obtained from the name of the <tt>rar</tt> file.
 This should match the name used when deploying the resource adapter config above. It is recommended you stick with the name <tt>genericra</tt> used by default.
 
-<h4>Configuring a MDB to receive messages</h4>
+<h3>Configuring a MDB to receive messages</h3>
 
 <p>This example shows you how to configure J2EE 1.4-style MDB that does not use annotations, which means that all configuration
 information is defined in two deployment descriptor files, the deployment descriptor <tt>ejb-jar.xml</tt> and the sun-specific 
@@ -119,11 +157,11 @@ the transactional attribute must be set to <tt>NotSupported</tt>. For more infor
         &lt;activation-config>
             &lt;activation-config-property>
               &lt;activation-config-property-name><b>ConnectionFactoryJndiName&lt;</b>/activation-config-property-name>
-              &lt;activation-config-property-value><b>jms/inboundQueueFactory&lt;</b>/activation-config-property-value>
+              &lt;activation-config-property-value><b>jms/WLInboundQueueFactory&lt;</b>/activation-config-property-value>
             &lt;/activation-config-property>
             &lt;activation-config-property>
               &lt;activation-config-property-name><b>DestinationJndiName&lt;</b>/activation-config-property-name>
-              &lt;activation-config-property-value><b>jms/inboundQueue&lt;</b>/activation-config-property-value>
+              &lt;activation-config-property-value><b>jms/WLInboundQueue&lt;</b>/activation-config-property-value>
             &lt;/activation-config-property>
         &lt;/activation-config>
       &lt;/mdb-resource-adapter>
@@ -150,7 +188,7 @@ The user should use appropriate WebLogic tools (such as the WebLogic admin conso
 
 <p>For other properties that may be configured, see the table "ActivationSpec Configuration" below.
 
-<h4>Accessing connections and destinations directly (e.g. to send a message)</h4>
+<h3>Accessing connections and destinations directly (e.g. to send a message)</h3>
 
 When configuring a MDB to consume messages from WebLogic JMS your code doesn't need to access the WebLogic JMS connection factory and destination directly. 
 You simply define them in the activation config as shown above. However when configuring an MDB to <em>send</em> messages, or when configuring a EJB, servlet or application
@@ -170,21 +208,20 @@ from the <em>Glassfish</em> JNDI store:
 </pre>
 
 <p>In accordance with standard JavaEE requirements, these resources need to be declared in the deployment descriptor for the MDB, EJB
-or other component. For example:
-
+or other component. For example, for a session bean, configure <tt>ejb-jar.xml</tt> with <tt>&lt;resource-env-ref></tt> elements as follows: 
 <pre>
 &lt;ejb-jar>
   &lt;enterprise-beans>
     &lt;session>
       . . .
-      &lt;resource-env-ref>
+      <b>&lt;resource-env-ref>
         &lt;resource-env-ref-name>jms/QCFactory&lt;/resource-env-ref-name>
 	    &lt;resource-env-ref-type>javax.jms.QueueConnectionFactory&lt;/resource-env-ref-type>
       &lt;/resource-env-ref>
       &lt;resource-env-ref>
         &lt;resource-env-ref-name>jms/outboundQueue&lt;/resource-env-ref-name>
 	    &lt;resource-env-ref-type>javax.jms.Queue&lt;/resource-env-ref-type>
-      &lt;/resource-env-ref>
+      &lt;/resource-env-ref></b>
  </pre>
 
 Note that the resources used are Glassfish resources, not WebLogic JMS resources. 
@@ -192,6 +229,7 @@ For every connection factory or destination that you want to use in the WebLogic
 you need to create a corresponding connection factory or destination in the GlassFish JNDI store
 and configure the Glassfish object to point to the corresponding  WebLogic JMS object.
 
+<p>
 To create a Glassfish connection factory and configure it to refer to a corresponding  WebLogic JMS connection factory:
 
  <pre>
@@ -199,11 +237,50 @@ asadmin create-connector-connection-pool --host localhost --port 4848 --raname g
 asadmin create-connector-resource --host localhost --port 4848 --poolname qcpool --target server jms/QCFactory
 </pre>
 
-<p>These commands together creates a connection factory in Glassfish with the JNDI name <tt>jms/outboundQueueFactory</tt> which
-and a corresponding connection pool <tt>qcpool</tt>. The pool is configured with the following 
+<p>These commands together creates a connection factory in Glassfish and its corresponding connection pool.
 
+The connection factory has the JNDI name <tt>jms/outboundQueueFactory</tt> 
+and obtains connections from a connection pool <tt>qcpool</tt>.
 
-<h2>Configuration properties</h2>
+The connection pool <tt>qcpool</tt> 
+uses the resource adapter config <tt>genericra</tt>, 
+contains objects of type <tt>javax.jms.QueueConnectionFactory</tt>,
+and is for use in a <tt>LocalTransaction</tt> only.
+It is configured with the properties specified using the <tt>--properties</tt> argument;
+multiple properties are configured as a colon-separated list of name-value pairs. Only one property is configured in this example, as follows:
+</p>
+
+<table border="1" width="1000px">
+<tr><th>Property</th><th>Value</th></tr>
+<tr><td><tt>ConnectionFactoryJndiName</tt></td><td><tt>jms/WLOutboundQueueFactory</tt></td></tr>
+</table>
+
+<p><tt>ConnectionFactoryJndiName</tt> must be set to the JNDI name of the corresponding connection factory in WebLogic's JNDI store.
+For a description of this and other properties that may be configured, see the table "ManagedConnectionFactory properties" below.
+
+<p>
+To create a Glassfish destination object and configure it to refer to a corresponding  WebLogic JMS destination:
+
+ <pre>
+asadmin create-admin-object --host localhost --port 4848 --target server --restype javax.jms.Queue --property DestinationJndiName=jms/WLOutboundQueue --raname genericra jms/outboundQueue
+</pre>
+
+<p>These commands together creates a destination in Glassfish which has the JNDI name <tt>jms/outboundQueue</tt>  
+which uses the resource adapter config <tt>genericra</tt>,
+and is of type <tt>javax.jms.Queue</tt>.
+It is configured with the properties specified using the <tt>--properties</tt> argument;
+multiple properties are configured as a colon-separated list of name-value pairs. Only one property is configured in this example, as follows:
+</p>
+
+<table border="1" width="1000px">
+<tr><th>Property</th><th>Value</th></tr>
+<tr><td><tt>DestinationJndiName</tt></td><td><tt>jms/WLOutboundQueue</tt></td></tr>
+</table>
+
+<p><tt>DestinationJndiName</tt> must be set to the JNDI name of the corresponding destination in WebLogic's JNDI store.
+For a description of this and other properties that may be configured, see the table "Destination properties" below.
+
+<h2><a name="configprops">Configuration properties</h2>
 
 <p>
 The tables below list the properties that need to be set to configure the resource adapter and any activation specs, managed connections and other
@@ -600,7 +677,7 @@ available only to a ActivationSpec are given below.
   </tbody>
 </table>
 
-<h2>Limitations</h2>
+<h2><a name="limitations">Limitations</h2>
 
 <p>Due to the nature of the WebLogic JMS client there are a number of limitations in the way in which it can be used with GenericJMSRA.
 
