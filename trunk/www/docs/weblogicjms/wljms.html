@@ -3,8 +3,17 @@
 <head>
   <title>Using GenericJMSRA to connect to Oracle WebLogic JMS</title>
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  
+    <style type="text/css">
+    body {
+      width: 1000px;
+    }
+  </style>
+  
 </head>
 <body>
+ 
+
 <h1>Using GenericJMSRA to connect Glassfish to Oracle WebLogic JMS <em>Beta</em></h1>
 <p>
 Author: Nigel Deakin<br/>
@@ -64,9 +73,12 @@ before you deploy this in Glassfish.
 <h3>Create the resource adapter configuration</h3>
 
 <p>Before you deploy the resource adapter you should create a resource adapter configuration in Glassfish. 
-You can do this using either the Glassfish admin console or the <tt>asadmin</tt> command. Here's an example using <tt>asadmin</tt>:
-<pre
->asadmin create-resource-adapter-config --host localhost --port 4848 --property SupportsXA=false:DeliveryType=Synchronous:ProviderIntegrationMode=jndi:JndiProperties=java.naming.factory.initial\=weblogic.jndi.WLInitialContextFactory,java.naming.provider.url\=t3\://localhost\:7001,java.naming.factory.url.pkgs\=weblogic.corba.client.naming genericra
+You can do this using either the Glassfish admin console or the <tt>asadmin</tt> command. Here's an example using <tt>asadmin</tt>.
+(This should be entered as a single line):
+<pre>
+asadmin create-resource-adapter-config --host localhost --port 4848 
+   --property SupportsXA=false:DeliveryType=Synchronous:ProviderIntegrationMode=jndi:JndiProperties=java.naming.factory.initial\=weblogic.jndi.WLInitialContextFactory,java.naming.provider.url\=t3\://localhost\:7001,java.naming.factory.url.pkgs\=weblogic.corba.client.naming 
+   genericra
 </pre>
 
 <p>This creates a resource adapter configuration with the name <tt>genericra</tt>. 
@@ -230,10 +242,15 @@ you need to create a corresponding connection factory or destination in the Glas
 and configure the Glassfish object to point to the corresponding  WebLogic JMS object.
 
 <p>
-To create a Glassfish connection factory and configure it to refer to a corresponding  WebLogic JMS connection factory:
+To create a Glassfish connection factory and configure it to refer to a corresponding WebLogic JMS connection factory,
+enter the following two commands (each of which should be entered as a single line):
 
  <pre>
-asadmin create-connector-connection-pool --host localhost --port 4848 --raname genericra --connectiondefinition javax.jms.QueueConnectionFactory --target server --transactionsupport LocalTransaction --property ConnectionFactoryJndiName=jms/WLOutboundQueueFactory qcpool
+asadmin create-connector-connection-pool --host localhost --port 4848 --raname genericra 
+   --connectiondefinition javax.jms.QueueConnectionFactory --target server 
+   --transactionsupport LocalTransaction --property ConnectionFactoryJndiName=jms/WLOutboundQueueFactory 
+   qcpool
+
 asadmin create-connector-resource --host localhost --port 4848 --poolname qcpool --target server jms/QCFactory
 </pre>
 
@@ -259,10 +276,12 @@ multiple properties are configured as a colon-separated list of name-value pairs
 For a description of this and other properties that may be configured, see the table "ManagedConnectionFactory properties" below.
 
 <p>
-To create a Glassfish destination object and configure it to refer to a corresponding  WebLogic JMS destination:
+To create a Glassfish destination object and configure it to refer to a corresponding  WebLogic JMS destination,
+execute the following (as a single line):
 
  <pre>
-asadmin create-admin-object --host localhost --port 4848 --target server --restype javax.jms.Queue --property DestinationJndiName=jms/WLOutboundQueue --raname genericra jms/outboundQueue
+asadmin create-admin-object --host localhost --port 4848 --target server --restype javax.jms.Queue 
+   --property DestinationJndiName=jms/WLOutboundQueue --raname genericra jms/outboundQueue
 </pre>
 
 <p>These commands together creates a destination in Glassfish which has the JNDI name <tt>jms/outboundQueue</tt>  
