@@ -5,7 +5,7 @@
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   
     <style type="text/css">
-    p {
+    p,li {
       width: 1000px;
     }
   </style>
@@ -105,7 +105,7 @@ When using <tt>asadmin</tt> you need need to escape each <tt>=</tt> and any <tt>
 
 <h3>Deploy the resource adapter</h3>
 
-After you've created the resource adapter configuration you can you can deploy the resource adapter using either the Glassfish admin console or the <tt>asadmin</tt> command. Here's an example using <tt>asadmin</tt>:
+<p>After you've created the resource adapter configuration you can you can deploy the resource adapter using either the Glassfish admin console or the <tt>asadmin</tt> command. Here's an example using <tt>asadmin</tt>:
 
 <pre>
 asadmin deploy --port=4848 --target server genericra.rar
@@ -202,7 +202,7 @@ The user should use appropriate WebLogic tools (such as the WebLogic admin conso
 
 <h3>Accessing connections and destinations directly (e.g. to send a message)</h3>
 
-When configuring a MDB to consume messages from WebLogic JMS your code doesn't need to access the WebLogic JMS connection factory and destination directly. 
+<p>When configuring a MDB to consume messages from WebLogic JMS your code doesn't need to access the WebLogic JMS connection factory and destination directly. 
 You simply define them in the activation config as shown above. However when configuring an MDB to <em>send</em> messages, or when configuring a EJB, servlet or application
 client to either send or receive messages, your code will need to obtain these objects using a JNDI lookup. 
 
@@ -236,7 +236,7 @@ or other component. For example, for a session bean, configure <tt>ejb-jar.xml</
       &lt;/resource-env-ref></b>
  </pre>
 
-Note that the resources used are Glassfish resources, not WebLogic JMS resources. 
+<p>Note that the resources used are Glassfish resources, not WebLogic JMS resources. 
 For every connection factory or destination that you want to use in the WebLogic JMS JNDI store, 
 you need to create a corresponding connection factory or destination in the GlassFish JNDI store
 and configure the Glassfish object to point to the corresponding  WebLogic JMS object.
@@ -311,7 +311,6 @@ administered objects when using GenericJMSRA to communicate with WebLogic JMS.
 <p>These properties are used to configure the resource adapter itself when it is deployed, 
 and can be specified using the <tt>create-resource-adapter-config</tt> command.</p>
 
-<p>
 <table border="1" width="1000px">
   <col width="89*"> <col width="55*"> <col width="53*"> <col width="59*"> 
   <thead> 
