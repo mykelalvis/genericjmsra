@@ -210,6 +210,8 @@ client to either send or receive messages, your code will need to obtain these o
 (When using a JavaEE 5 application server such as Glassfish 2.1.1 or a JavaEE 6 application server such as Glassfish 3.1
 you also have the option of performing these lookups declaratively using annotations. This is not described here.)
 
+<p><b>Looking up the connection factory and destination</b></p>
+
 <p>The following code looks up a connection factory with the JNDI name <tt>jms/MyQCFactory</tt> and a queue with the name <tt>jms/outboundQueue</tt>
 from the <em>Glassfish</em> JNDI store:
 
@@ -218,6 +220,13 @@ from the <em>Glassfish</em> JNDI store:
    QueueConnectionFactoryqueueConnectionFactory = (QueueConnectionFactory) jndiContext.lookup("java:comp/env/jms/MyQCFactory");
    Queue queue = (Queue) jndiContext.lookup("java:comp/env/jms/outboundQueue");
 </pre>
+
+<p>Note that the resources used are Glassfish resources, not WebLogic JMS resources. 
+For every connection factory or destination that you want to use in the WebLogic JMS JNDI store, 
+you need to create a corresponding connection factory or destination in the GlassFish JNDI store
+and configure the Glassfish object to point to the corresponding  WebLogic JMS object.
+
+<p><b>Declaring up the connection factory and destination</b></p>
 
 <p>In accordance with standard JavaEE requirements, these resources need to be declared in the deployment descriptor for the MDB, EJB
 or other component. For example, for a session bean, configure <tt>ejb-jar.xml</tt> with <tt>&lt;resource-env-ref></tt> elements as follows: 
@@ -236,10 +245,7 @@ or other component. For example, for a session bean, configure <tt>ejb-jar.xml</
       &lt;/resource-env-ref></b>
  </pre>
 
-<p>Note that the resources used are Glassfish resources, not WebLogic JMS resources. 
-For every connection factory or destination that you want to use in the WebLogic JMS JNDI store, 
-you need to create a corresponding connection factory or destination in the GlassFish JNDI store
-and configure the Glassfish object to point to the corresponding  WebLogic JMS object.
+<p><b>To create a Glassfish connection factory and configure it to refer to a corresponding WebLogic JMS connection factory</b></p>
 
 <p>
 To create a Glassfish connection factory and configure it to refer to a corresponding WebLogic JMS connection factory,
@@ -260,10 +266,12 @@ The connection factory has the JNDI name <tt>jms/outboundQueueFactory</tt>
 and obtains connections from a connection pool <tt>qcpool</tt>.
 
 The connection pool <tt>qcpool</tt> 
-uses the resource adapter config <tt>genericra</tt>, 
-contains objects of type <tt>javax.jms.QueueConnectionFactory</tt>,
-and is for use in a <tt>LocalTransaction</tt> only.
-It is configured with the properties specified using the <tt>--properties</tt> argument;
+uses the resource adapter config <tt>genericra</tt> and
+contains objects of type <tt>javax.jms.QueueConnectionFactory</tt>.
+The argument <tt>--transactionsupport LocalTransaction</tt> specifies that the connection will be used in local transactions only.
+(You could also specify <tt>--transactionsupport LocalTransaction</tt>. 
+The default setting of <tt>--transactionsupport XATransaction</tt> may not be used. See <a href="#limitations">Limitations</a> below for more information.)
+The connection pool is configured with the properties specified using the <tt>--properties</tt> argument;
 multiple properties are configured as a colon-separated list of name-value pairs. Only one property is configured in this example, as follows:
 </p>
 
@@ -274,6 +282,8 @@ multiple properties are configured as a colon-separated list of name-value pairs
 
 <p><tt>ConnectionFactoryJndiName</tt> must be set to the JNDI name of the corresponding connection factory in WebLogic's JNDI store.
 For a description of this and other properties that may be configured, see the table "ManagedConnectionFactory properties" below.
+
+<p><b>To create a Glassfish destination object and configure it to refer to a corresponding  WebLogic JMS destination</b></p>
 
 <p>
 To create a Glassfish destination object and configure it to refer to a corresponding  WebLogic JMS destination,
