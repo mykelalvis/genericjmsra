@@ -24,7 +24,7 @@ Relates to GenericJMSRA version 2.1</br>
 
 <p>
 <a href="#quickstartguide">Quick start guide</a><br>
-<a href="#configprops">Configuration properties</a><br>
+<a href="#configprops">Configuration reference</a><br>
 <a href="#limitations">Limitations</a><br>
 
 
@@ -307,9 +307,9 @@ multiple properties are configured as a colon-separated list of name-value pairs
 </table>
 
 <p><tt>DestinationJndiName</tt> must be set to the JNDI name of the corresponding destination in WebLogic's JNDI store.
-For a description of this and other properties that may be configured, see the table "Destination properties" below.
+For a description of this and other properties that may be configured, see the table "Destination properties" below.</p>
 
-<h2><a name="configprops">Configuration properties</h2>
+<h2><a name="configprops">Configuration reference</h2>
 
 <p>
 The tables below list the properties that need to be set to configure the resource adapter and any activation specs, managed connections and other
@@ -739,10 +739,11 @@ Messages will be received in a non-transacted session with an acknowledgeMode of
 <li><p>Messages will be received in a non-transacted session with an acknowledgeMode of <tt>AUTO_ACKNOWLEDGE</tt>.
 </ul>
 
-<h4>Using a MDB or EJB to send messages: Container-managed transactions (CMT)</h4>
+<h4>Accessing connections and destinations directly (e.g. to send a message) - Container-managed transactions (CMT)</h4>
 
 <p>
-When sending messages from a MDB or EJB, and container-managed transactions are being used, the connection pool's <tt>transaction-support</tt> property should be set to either 
+When accessing connections directly (such as when sending messages from a MDB or EJB) and container-managed transactions are being used, 
+the connection pool's <tt>transaction-support</tt> property should be set to either 
 <tt>LocalTransaction</tt> or <tt>NoTransaction</tt>.
 If the default value of <tt>XATransaction</tt> is used an exception will be thrown at runtime when <tt>createConnection()</tt> is called.
 This is the case irrespective of the transactional attribute of the MDB or EJB. Note that 
@@ -764,10 +765,10 @@ If it is set to  <tt>NoTransaction</tt> then a non-transacted session will be us
 If it is set to <tt>LocalTransaction</tt> then a (local, non-XA) transacted session will be used which will be committed or rolled back 
 when the <tt>UserTransaction</tt> is committed or rolled back. In this case, calling <tt>session.commit()</tt> or  <tt>session.rollback()</tt> will cause an exception.
 
+<h4>Accessing connections and destinations directly (e.g. to send a message) - Bean-managed transactions (BMT)</h4>
 
-<h4>Using a MDB or EJB to send messages: Bean-managed transactions (BMT)</h4>
-
-<p>When sending messages from a MDB, and bean-managed transactions are being used, then as with the CMT case 
+<p>When accessing connections directly (such as when sending messages from a MDB or EJB) and bean-managed transactions are being used, 
+then as with the CMT case 
 the connection pool's <tt>transaction-support</tt> property should be set to either <tt>LocalTransaction</tt> or <tt>NoTransaction</tt>.
 If the default value of <tt>XATransaction</tt> is used an exception will be thrown at runtime when <tt>createConnection()</tt> is called.
 This is the case irrespective of whether a <tt>UserTransaction</tt> is in progress. 
