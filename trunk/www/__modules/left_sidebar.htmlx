@@ -51,6 +51,7 @@ under a single navigation item.
 
         <li><a href="http://java.net/jira/browse/GENERICJMSRA/">Issue tracker</a></li>
         <li> <a href="http://genericjmsra.java.net/downloadsindex.html">Downloads</a> </li>
+        <li> <a href="http://www.apache.org/licenses/LICENSE-2.0">License</a> </li>        
         <li> <a href="#">Using GenericJMSRA....</a>
           <ul>
             <li> <a href="https://genericjmsra.java.net/docs/userguide/userguide.html">User guide</a></li>
@@ -63,36 +64,6 @@ under a single navigation item.
             <li> <a href="http://java.net/projects/genericjmsra/sources">Source Code</a> </li>
           </ul>
         </li>
-        <li><br>
-<!-- Google CSE code begins -->
-          <form id="searchbox_006309538249653171294:6o2eqfdhoko"
- onsubmit="return false;"> <input value="Search" type="submit"><input
- name="q" size="8" type="text"></form>
-          <script type="text/javascript"
- src="http://www.google.com/coop/cse/brand?form=searchbox_006309538249653171294%3A6o2eqfdhoko&amp;lang=en"></script>
-          <div id="results_006309538249653171294:6o2eqfdhoko"
- style="display: none;">
-          <div class="cse-closeResults"><a>&times;
-Close</a>
-          </div>
-          <div class="cse-resultsContainer"></div>
-          </div>
-          <script
- src="http://www.google.com/uds/api?file=uds.js&amp;v=1.0&amp;key=ABQIAAAATn2clYMfru9xiVNf9lGO8RSxhezBL5BhhdiALlPnOZjR2eGq1BTLZHFCn5o2_aQ8HHyNKhHzgFSN9g&amp;hl=en"
- type="text/javascript"></script>
-          <script src="http://www.google.com/cse/api/overlay.js"></script>
-          <script type="text/javascript">
-function OnLoad() {
-new CSEOverlay("006309538249653171294:6o2eqfdhoko",
-document.getElementById("searchbox_006309538249653171294:6o2eqfdhoko"),
-document.getElementById("results_006309538249653171294:6o2eqfdhoko"));
-}
-GSearch.setOnLoadCallback(OnLoad);
-          </script><!-- Google CSE Code ends --></li>
-        <li> <a href="mailto:users@shoal.java.net">Feedback/Questions?</a></li>
-        <li><a href="http://java.net/projects/shoal/roles">Membership</a></li>
-        <li> <a href="http://shoal.java.net/public/contribute.html">Join
-Project Shoal</a></li>
       </ul>
     </ul>
 <!--
