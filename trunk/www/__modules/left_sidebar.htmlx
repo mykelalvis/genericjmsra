@@ -44,10 +44,10 @@ For example, the following match attribute says "overview" should be the current
 page even if you are in sub.html. This is useful for grouping a large number of pages
 under a single navigation item.
 -->
-          <a href="http://genericjmsra.java.net" match="/|/sub.html">Overview</a>
+          <a href="http://genericjmsra.java.net" match="/|/sub.html">GenericJMSRA Home</a>
         </li>
         <li> <a href="http://java.net/projects/genericjmsra/lists/announce/archive">Announcements</a></li>
-        <li> <a href="http://java.net/projects/shoal/lists/">Mailing lists</a></li>
+        <li> <a href="http://java.net/projects/genericjmsra/lists/">Mailing lists</a></li>
 
         <li><a href="http://java.net/jira/browse/GENERICJMSRA/">Issue tracker</a></li>
         <li> <a href="http://genericjmsra.java.net/downloadsindex.html">Downloads</a> </li>
@@ -59,7 +59,7 @@ under a single navigation item.
         </li>
         <li> <a href="#">Developing GenericJMSRA....</a>
           <ul>
-            <li> <a href="/servlets/ProjectDocumentView?documentID=43252&amp;noNav=true">Build Instructions</a> </li>
+            <li> <a href="http://java.net/projects/genericjmsra/sources/svn/content/trunk/README.build">Build Instructions</a> </li>
             <li> <a href="http://java.net/projects/genericjmsra/sources">Source Code</a> </li>
           </ul>
         </li>
