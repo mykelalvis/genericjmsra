@@ -50,7 +50,7 @@ under a single navigation item.
         <li> <a href="http://java.net/projects/genericjmsra/lists/">Mailing lists</a></li>
 
         <li><a href="http://java.net/jira/browse/GENERICJMSRA/">Issue tracker</a></li>
-        <li> <a href="http://genericjmsra.java.net/downloadsindex.html">Downloads</a> </li>
+        <li> <a href="http://genericjmsra.java.net/docs/Releases.html">Downloads</a> </li>
         <li> <a href="http://www.apache.org/licenses/LICENSE-2.0">License</a> </li>        
         <li> <a href="#">Using GenericJMSRA....</a>
           <ul>
