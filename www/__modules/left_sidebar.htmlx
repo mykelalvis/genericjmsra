@@ -58,7 +58,7 @@ under a single navigation item.
             <li> <a href="http://genericjmsra.java.net/docs/articles_guides.html">Articles</a> </li>
           </ul>
         </li>
-        <li> <a href="#">Developing GenericJMSRA....</a>
+        <li> <a href="#" match="foo">Developing GenericJMSRA....</a>
           <ul>
             <li> <a href="http://java.net/projects/genericjmsra/sources/svn/content/trunk/README.build.txt">Build Instructions</a> </li>
             <li> <a href="http://java.net/projects/genericjmsra/sources">Source Code</a> </li>
