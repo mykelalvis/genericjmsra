@@ -14,11 +14,13 @@ Notice that there's no closing tag for this <dd>, and there's extra </dd> at the
 top of the file. This is how it should be, due to the place where this gets injected.
 -->
 <script>
-var info = {
-title: "GenericJMSRA",
-logo: "http://genericjmsra.java.net/Shoal_244_179.JPG"
-}
+var info = {title: "GenericJMSRA"}
 </script>
+
+<!-- When we get a GenericJMSRA logo, insert it above as shown in the following line:
+var info = {title: "GenericJMSRA", logo: "http://genericjmsra.java.net/Shoal_244_179.JPG"}
+-->
+
 
 <div id="navcol">
 <dl id="projecttools" class="navgroup" style="text-align: left;">
