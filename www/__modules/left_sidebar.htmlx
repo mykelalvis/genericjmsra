@@ -68,16 +68,7 @@ under a single navigation item.
         </li>
       </ul>
     </ul>
-<!--
-This script determines the logo on the top-left corner of the page.
-The title is mandatory, but the logo is optional.
--->
-    <script>
-var info = {
-title: "GenericJMSRA",
-logo: "http://genericjmsra.java.net/Shoal_244_179_0.JPG"
-}
-    </script>
+
     <script src="http://glassfish-theming.java.net/zone-core.js"></script>
     <script src="http://glassfish-theming.java.net/theme.js"></script><!--
 If your project uses a site traffic tracker like Google Analytics, this is a good place
