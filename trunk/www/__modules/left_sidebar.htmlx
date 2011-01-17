@@ -56,7 +56,7 @@ under a single navigation item.
         <li> <a href="http://www.apache.org/licenses/LICENSE-2.0">License</a> </li>        
         <li> <a href="#">Using GenericJMSRA....</a>
           <ul>
-            <li> <a href="https://genericjmsra.java.net/docs/userguide/userguide.html">User guide</a></li>
+            <li> <a href="http://genericjmsra.java.net/docs/userguide/userguide.html">User guide</a></li>
             <li> <a href="http://genericjmsra.java.net/docs/articles_guides.html">Articles</a> </li>
           </ul>
         </li>
