@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2004-2005 Oracle and/or its affiliates. All rights reserved.
+ * Copyright 2004-2005 Sun Microsystems, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ public class ManagedJMSConnectionFactory
 
     protected javax.jms.XAConnection createXAConnection(PasswordCredential pc,
         javax.jms.ConnectionFactory cf) throws JMSException {
-        if (pc != null && (!pc.getUserName().equals(""))) {
+        if (pc != null) {
             return ((XAConnectionFactory) cf).createXAConnection(pc.getUserName(),
                 new String(pc.getPassword()));
         } else {
@@ -50,7 +50,7 @@ public class ManagedJMSConnectionFactory
 
     protected javax.jms.Connection createConnection(PasswordCredential pc,
         javax.jms.ConnectionFactory cf) throws JMSException {
-        if (pc != null && (!pc.getUserName().equals(""))) {
+        if (pc != null) {
             return ((javax.jms.ConnectionFactory) cf).createConnection(pc.getUserName(),
                 new String(pc.getPassword()));
         } else {

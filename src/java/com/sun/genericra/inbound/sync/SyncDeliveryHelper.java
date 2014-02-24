@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2004-2005 Oracle and/or its affiliates. All rights reserved.
+ * Copyright 2004-2005 Sun Microsystems, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -422,38 +422,31 @@ public class SyncDeliveryHelper {
     
     
     private void runOnceStdNoXA() throws Exception {
-    	
-    	// Issue 41
-    	// The functionality for hold until ack mode is incomplete and of unknown quality,
-    	// and definitely doesn't work for NoXA mode
-    	// comment it all out
-    	
         if (msg != null) {
-//            // Optionally wrap for ack() call
-//            /*
-//             * TODO : The message  wrappers need to be optimized
-//             * we might not beed one wrapper class for each message
-//             * type
-//             */
-//            coord = newCoord();
-//            msg = mHoldUntilAck ? wrapMsg(msg, coord, -1) : msg;
-//            try {
+            // Optionally wrap for ack() call
+            /*
+             * TODO : The message  wrappers need to be optimized
+             * we might not beed one wrapper class for each message
+             * type
+             */
+            msg = mHoldUntilAck ? wrapMsg(msg, coord, -1) : msg;
+            try {
                 deliverMessage(msg);
-//                coord.msgDelivered(true);
-//            }catch (ResourceException r) {
-//                coord.setRollbackOnly(r);
-//            }
-//            
-//            // Wait for ack() to be called if applicable
-//            coord.waitForAcks();
-//            
-//            // Commit/rollback
-//            if (!coord.isRollbackOnly()) {
-//                this.jmsResource.getSession().commit();
-//            } else {
-//                this.jmsResource.getSession().rollback();
-//            }
-//            this.jmsResource.releaseEndpoint();
+                coord.msgDelivered(true);
+            }catch (ResourceException r) {
+                coord.setRollbackOnly(r);
+            }
+            
+            // Wait for ack() to be called if applicable
+            coord.waitForAcks();
+            
+            // Commit/rollback
+            if (!coord.isRollbackOnly()) {
+                this.jmsResource.getSession().commit();
+            } else {
+                this.jmsResource.getSession().rollback();
+            }
+            this.jmsResource.releaseEndpoint();
         }
     }
     
@@ -561,17 +554,20 @@ public class SyncDeliveryHelper {
             }
         }
         
-		public void waitForAcks() throws InterruptedException {
-
-			_logger.log(Level.FINE, "Tying to acquire a semaphore");
-			if (!mSemaphore.tryAcquire(acktimeout, TimeUnit.SECONDS)) {
-				_logger.log(Level.FINE, "Acquired");
-				setRollbackOnly();
-			}
-			/*
-			 * if (jmsResource.getIsWorkStopped()) { setRollbackOnly(); return; }
-			 */
+        public void waitForAcks() throws InterruptedException {
+            
+            _logger.log(Level.FINE, "Tying to acquire a semaphore");
+                if (!mSemaphore.tryAcquire(acktimeout ,TimeUnit.SECONDS)){                
+                    _logger.log(Level.FINE, "Acquired");
+			setRollbackOnly();
 		}
+		/*
+                    if (jmsResource.getIsWorkStopped()) {
+                        setRollbackOnly();
+		 	return;
+                    }
+		*/
+        }
         
         public boolean needsToDiscardEndpoint() {
             return mNeedsToDiscardEndpoint;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2004-2005 Oracle and/or its affiliates. All rights reserved.
+ * Copyright 2004-2005 Sun Microsystems, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -289,10 +289,11 @@ public abstract class AbstractManagedConnectionFactory
     public boolean equals(Object obj) {
         //debug("equals" + obj);
         //XXX: enhance
-        if (obj == null) {
+        if (!(super.equals(obj))) {
             return false;
         }
-        if (!(super.equals(obj))) {
+
+        if (obj == null) {
             return false;
         }
 

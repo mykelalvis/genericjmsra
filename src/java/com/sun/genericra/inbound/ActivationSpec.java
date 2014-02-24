@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2004-2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright 2004-2005 Sun Microsystems, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import com.sun.genericra.util.*;
 
 import java.util.logging.*;
 
+import javax.resource.ResourceException;
 import javax.resource.spi.*;
 
 
@@ -53,7 +54,7 @@ public class ActivationSpec extends GenericJMSRAProperties
     private int reconnectAttempts;
     private int reconnectInterval;
     private int maxPoolSize = 8;
-    private int maxWaitTime = 300;
+    private int maxWaitTime = 3;
     private boolean isDmd = false;
     private String dmClassName;
     private String dmJndiName;
