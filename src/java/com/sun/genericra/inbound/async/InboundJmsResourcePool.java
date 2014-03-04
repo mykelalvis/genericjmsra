@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2004-2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright 2004-2005 Sun Microsystems, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,20 +19,22 @@ package com.sun.genericra.inbound.async;
 import com.sun.genericra.GenericJMSRA;
 import com.sun.genericra.inbound.*;
 import com.sun.genericra.util.*;
-
+import com.sun.genericra.monitoring.*;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.jms.*;
+import com.sun.genericra.GenericJMSRA;
 import javax.resource.spi.*;
 import javax.resource.spi.endpoint.*;
 import javax.resource.ResourceException;
+
 import javax.transaction.xa.XAResource;
 
 
 /**
- * ServerSessionPool implementation as per JMS 1.1 spec.
+ * ServerSesionPool implementation as per JMS 1.1 spec.
  * @author Binod P.G
  */
 public class InboundJmsResourcePool extends AbstractJmsResourcePool implements ServerSessionPool {
@@ -47,20 +49,20 @@ public class InboundJmsResourcePool extends AbstractJmsResourcePool implements S
     private int maxSize;
     private int connectionsInUse = 0;
     private long maxWaitTime;
-    private SortedSet<WaitQueueEntry> waitQueue = null;
+    private LinkedList waitQ = null;
     private long TIME_OUT = 180 * 1000;
     private StringManager sm = StringManager.getManager(GenericJMSRA.class);
 
-
+    
     public InboundJmsResourcePool(EndpointConsumer consumer, boolean transacted) {
-        super(consumer, transacted);
-        this.waitQueue = new TreeSet<WaitQueueEntry>();
+        super(consumer, transacted);    
+        this.waitQ = new LinkedList();
     }
-
+    
     public int getMaxSize() {
         return this.maxSize;
     }
-
+    
     public long getMaxWaitTime() {
         return this.maxWaitTime;
     }
@@ -72,7 +74,7 @@ public class InboundJmsResourcePool extends AbstractJmsResourcePool implements S
         }
         return ret;
     }
-
+    
     public int getBusyResources() {
         int busy = 0;
         if (resources != null) {
@@ -87,7 +89,7 @@ public class InboundJmsResourcePool extends AbstractJmsResourcePool implements S
         return busy;
     }
     
-    public int getFreeResources() {
+      public int getFreeResources() {
         int free = 0;
         if (resources != null) {
             Iterator it = resources.iterator();
@@ -99,25 +101,24 @@ public class InboundJmsResourcePool extends AbstractJmsResourcePool implements S
             }
         }
         return free;
-    }
-
-    public int getConnectionsInUse() {
-        return this.connectionsInUse;
-    }
-
-    public int getWaiting() {
-        int wait = 0;
-        if (this.waitQueue != null) {
-            wait = this.waitQueue.size();
-        }
-        return wait;
-    }
-
-    public ConnectionConsumer createConnectionConsumer(Destination dest, String name,
+    }  
+      
+      public int getConnectionsInUse() {
+          return this.connectionsInUse;
+      }
+      
+      public int getWaiting() {
+          int wait = 0;
+          if (this.waitQ != null) {
+              wait = this.waitQ.size();
+          }
+          return wait;
+      }
+  public ConnectionConsumer createConnectionConsumer(Destination dest, String name,
             int maxMessages) throws JMSException {
         ConnectionConsumer conconsumer = null;
         Connection con = getConnection();
-
+        
         if (isTopic()) {
             String selector = constructSelector(name);
             conconsumer = ((TopicConnection) con).createConnectionConsumer((Topic) dest,
@@ -129,10 +130,10 @@ public class InboundJmsResourcePool extends AbstractJmsResourcePool implements S
             conconsumer = con.createConnectionConsumer(dest, name, this,
                     maxMessages);
         }
-
+        
         return conconsumer;
     }
-
+    
     public ConnectionConsumer createDurableConnectionConsumer(Destination dest, String name,
             String sel, int maxMessages) throws JMSException {
         ConnectionConsumer conconsumer = null;
@@ -141,11 +142,8 @@ public class InboundJmsResourcePool extends AbstractJmsResourcePool implements S
         conconsumer = ((TopicConnection) con).createDurableConnectionConsumer((Topic) dest,
                 name, selector, this, maxMessages);
         return conconsumer;
-    }
-
+    }     
     public synchronized void initialize() throws ResourceException {
-        _logger.log(Level.FINER, "Initializing the ServerSession resource pool...");
-
         try {
             resources = new ArrayList();
             this.maxSize = consumer.getSpec().getMaxPoolSize();
@@ -174,9 +172,9 @@ public class InboundJmsResourcePool extends AbstractJmsResourcePool implements S
         } catch (JMSException e) {
             throw ExceptionUtils.newResourceException(e);
         }
-
-        _logger.log(Level.FINE, "ServerSession resource pool initialized");
     }
+
+    
 
     public InboundJmsResource create() throws JMSException {
         _logger.log(Level.FINER, "Creating the ServerSession");
@@ -196,53 +194,23 @@ public class InboundJmsResourcePool extends AbstractJmsResourcePool implements S
         return new InboundJmsResource(sess, this, xar);
     }
 
+
+
     public ServerSession getServerSession() throws JMSException {
         InboundJmsResource result = null;
-        WaitQueueEntry waitQueueEntry = null;
-        long startTime = System.currentTimeMillis();
-        long elapsedWaitTime = 0;
-        long remainingWaitTime = maxWaitTime;
+        PauseObject obj = null;
 
-        while (true) {
-            synchronized (this) {
-                validate();
-                result = _getServerSession();
+        while (result == null) {
+            validate();
+            result = _getServerSession();
 
-                if (result != null) {
-                    if (waitQueueEntry != null) {
-                        waitQueue.remove(waitQueueEntry);
+            if (result == null) {
+                if (maxWaitTime >= 0) {
+                    if (obj == null) {
+                        obj = new PauseObject();
                     }
-                    break;
-                }
 
-                elapsedWaitTime = System.currentTimeMillis() - startTime;
-                if (maxWaitTime > 0) {
-                    if (elapsedWaitTime >= maxWaitTime) {
-                        _logger.log(Level.WARNING, "MaxWaitTime exceeded without acquiring a ServerSession");
-                        if (waitQueueEntry != null) {
-                            waitQueue.remove(waitQueueEntry);
-                        }
-                        String msg = sm.getString("pool_limit_reached");
-                        throw new JMSException(msg);
-                    }
-                    remainingWaitTime = maxWaitTime - elapsedWaitTime;
-                }
-
-                if (waitQueueEntry == null) {
-                    waitQueueEntry = new WaitQueueEntry(startTime);
-                }
-                waitQueue.add(waitQueueEntry);
-                waitQueueEntry.setNotified(false);
-            }
-
-            synchronized (waitQueueEntry) {
-                if (!waitQueueEntry.isNotified()) {
-                    try {
-                        _logger.log(Level.FINE, "Waiting for :" + remainingWaitTime);
-                         waitQueueEntry.wait(remainingWaitTime);
-                    } catch (InterruptedException ie) {
-                        // ignore
-                    }
+                    obj.pauseCallingThread();
                 }
             }
         }
@@ -255,7 +223,7 @@ public class InboundJmsResourcePool extends AbstractJmsResourcePool implements S
             String msg = sm.getString("serversession_pool_destroyed");
             throw new JMSException(msg);
         }
-        if (deploymentCompleted)
+        if(deploymentCompleted)
             return;
         int retry = this.getConsumer().getSpec().getMDBDeploymentRetryAttempt();
         long retryInterval = this.getConsumer().getSpec().
@@ -273,9 +241,9 @@ public class InboundJmsResourcePool extends AbstractJmsResourcePool implements S
                endPoint = mef.createEndpoint(null);
                deploymentCompleted = true;
                break;
-           } catch (UnavailableException ue) {
+           } catch(UnavailableException ue) {
                    failed = true;
-           } catch (Throwable t) {
+           } catch(Throwable t) {
                    //throwable may not be thrown but as safeguard I added this
                    //since I am passing null object for createEndpoint.
            }
@@ -285,13 +253,13 @@ public class InboundJmsResourcePool extends AbstractJmsResourcePool implements S
            }
        }
        try {
-           if (endPoint != null)
+           if(endPoint != null )
                endPoint.release();
 
-       } catch( Exception e) {
+       } catch(Exception e) {
            //ignore
        }
-       if (failed) {
+       if(failed) {
            _logger.log(Level.FINER, "Application not yet deployed or" +
              " deployment failed.\n Use properties MDBDeploymentRetryAttempt" +
               " & MDBDeploymentRetryInterval for tuning MDB deployment");
@@ -300,7 +268,7 @@ public class InboundJmsResourcePool extends AbstractJmsResourcePool implements S
        }
     }
 
-    private InboundJmsResource _getServerSession()
+    private synchronized InboundJmsResource _getServerSession()
         throws JMSException {
         _logger.log(Level.FINER, "JMS provider is getting the ServerSession");
 
@@ -315,7 +283,7 @@ public class InboundJmsResourcePool extends AbstractJmsResourcePool implements S
 
             if (resource.isFree()) {
                 connectionsInUse++;
-
+                
                 return resource.markAsBusy();
             }
         }
@@ -334,7 +302,6 @@ public class InboundJmsResourcePool extends AbstractJmsResourcePool implements S
     public synchronized void put(InboundJmsResource resource) {
         resource.markAsFree();
         connectionsInUse--;
-        _logger.log(Level.FINEST, "Connections remaining in use: " + connectionsInUse);
 
         if (stopped) {
             if (connectionsInUse <= 0) {
@@ -350,29 +317,23 @@ public class InboundJmsResourcePool extends AbstractJmsResourcePool implements S
      * will not be affected. It can be resumed later.
      */
     public void stop() throws JMSException {
-        _logger.log(Level.FINER, "Stopping the ServerSession resource pool...");
-        synchronized (this) {
-            this.stopped = true;
-            this.maxWaitTime = 0;
-            releaseAllWaitingThreads();
-            waitForAll();
-        }
+        this.stopped = true;
+        this.maxWaitTime = 0;
+        waitForAll();
         releaseAllResources();
 
         if (dmdCon != null) {
             this.dmdCon.close();
         }
-        _logger.log(Level.FINE, "ServerSession resource pool stopped");
     }
 
     /**
      * Destroys the ServerSessionPool.
      */
     public void destroy() throws JMSException {
-        _logger.log(Level.FINER, "Destroying the ServerSession resource pool...");
         this.destroyed = true;
         stop();
-        _logger.log(Level.FINE, "ServerSession resource pool destroyed");
+        releaseAllWaitingThreads();
     }
 
     public synchronized void waitForAll() {
@@ -388,16 +349,15 @@ public class InboundJmsResourcePool extends AbstractJmsResourcePool implements S
         }
     }
 
-    public synchronized void releaseAllWaitingThreads() {
-        int count = waitQueue.size();
-        for (WaitQueueEntry waitQueueEntry : waitQueue) {
-            _logger.log(Level.FINE, "Notifying the thread");
-            waitQueueEntry.setNotified(true);
-            synchronized (waitQueueEntry) {
-                waitQueueEntry.notify();
-            }
+    public void releaseAllWaitingThreads() {
+        Iterator it = waitQ.iterator();
+        int count = 0;
+
+        while (it.hasNext()) {
+            PauseObject obj = (PauseObject) it.next();
+            obj.resume();
+            count++;
         }
-        waitQueue.clear();
 
         _logger.log(Level.FINE, "Released a total of " + count + " requests");
     }
@@ -412,47 +372,79 @@ public class InboundJmsResourcePool extends AbstractJmsResourcePool implements S
                 obj.destroy();
             } catch (Exception e) {
                 // This is just to make sure that if one resource fails to destroy
-                // we still call destroy on others.
+                // we still call  destroy on others.
                 _logger.log(Level.SEVERE,
                     "Cannot destroy resource " + obj.toString());
             }
         }
     }
 
-    private void resumeWaitingThread() {
-        if (!waitQueue.isEmpty()) {
-            _logger.log(Level.FINE, "Notifying the thread");
-            WaitQueueEntry waitQueueEntry = waitQueue.first();
-            waitQueue.remove(waitQueueEntry);
-            waitQueueEntry.setNotified(true);
-            synchronized (waitQueueEntry) {
-                waitQueueEntry.notify();
+
+
+    public void resumeWaitingThread() {
+        PauseObject obj = null;
+
+        synchronized (waitQ) {
+            if (waitQ.size() > 0) {
+                obj = (PauseObject) waitQ.removeFirst();
             }
+        }
+
+        if (obj != null) {
+            obj.resume();
         }
     }
 
     /**
-     * The class that holds the logic of wait queue entries.
+     * The class that holds the logic of wait queue.
      */
-    static class WaitQueueEntry implements Comparable<WaitQueueEntry> {
-        final long entryTime;
-        volatile boolean notified = false;
+    class PauseObject {
+        long startTime = 0;
+        long elapsedWaitTime = 0;
+        long remainingWaitTime = 0;
 
-        WaitQueueEntry(long entryTime) {
-            this.entryTime = entryTime;
+        void pauseCallingThread() throws JMSException {
+            if (maxWaitTime == 0) {
+                remainingWaitTime = 0;
+                startTime = 0;
+            } else {
+                if (startTime == 0) {
+                    this.startTime = System.currentTimeMillis();
+                }
+
+                elapsedWaitTime = startTime - System.currentTimeMillis();
+
+                if (elapsedWaitTime > maxWaitTime) {
+                    /** WE SHOULD LOG SOMETHING **/
+                    String msg = sm.getString("pool_limit_reached");
+                    throw new JMSException(msg);
+                }
+
+                remainingWaitTime = startTime - elapsedWaitTime;
+            }
+
+            pause();
         }
 
-        @Override
-        public int compareTo(WaitQueueEntry obj) {
-            return (int)(entryTime - obj.entryTime);
+        synchronized void pause() {
+            synchronized (waitQ) {
+                waitQ.addLast(this);
+            }
+
+            try {
+                _logger.log(Level.FINE, "Waiting for :" + remainingWaitTime);
+                wait(remainingWaitTime);
+            } catch (InterruptedException ie) {
+            }
+
+            synchronized (waitQ) {
+                waitQ.remove(this);
+            }
         }
 
-        void setNotified(boolean notified) {
-            this.notified = notified;
-        }
-
-        boolean isNotified() {
-            return notified;
+        synchronized void resume() {
+            _logger.log(Level.FINE, "Notifying the thread");
+            notify();
         }
     }
 }

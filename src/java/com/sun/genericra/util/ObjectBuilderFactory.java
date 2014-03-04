@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2004-2005 Oracle and/or its affiliates. All rights reserved.
+ * Copyright 2004-2005 Sun Microsystems, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -87,24 +87,16 @@ public class ObjectBuilderFactory {
         }
 
         public Object createObject() throws ResourceException {
-        	InitialContext ic = null;
             try {
                 Hashtable props = parseToProperties(this.jndiProps);
                 debug("Properties passed to InitialContext :: " + props);
 
-                ic = new InitialContext(props);
+                InitialContext ic = new InitialContext(props);
                 debug("Looking the JNDI name :" + this.jndiName);
 
                 return ic.lookup(this.jndiName);
             } catch (Exception e) {
                 throw ExceptionUtils.newInvalidPropertyException(e);
-            } finally {
-            	if (ic!=null)
-					try {
-						ic.close();
-					} catch (NamingException e) {
-						// ignore errors on closing the InitialContext
-					}
             }
         }
     }
