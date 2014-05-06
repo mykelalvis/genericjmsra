@@ -1,0 +1,147 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>Configure_GenericJMSRA_For_ActiveMQ</title>
+  <meta http-equiv="content-type"
+ content="text/html; charset=ISO-8859-1">
+  <meta name="author" content="Sivakumar.Thyagarajan@Sun.COM">
+  <meta http-equiv="CONTENT-TYPE" content="text/html; charset=utf-8">
+  <style>
+<!--
+@page { size: 8.27in 11.69in; margin: 0.79in }
+P { margin-bottom: 0.08in }
+--></style>
+</head>
+<body>
+<br>
+<ol>
+  <li>&nbsp;Install GlassFish V2 and ActiveMQ 4.1<br>
+GlassFish V2 : <a
+ href="http://glassfish.java.net/downloads/v2-b33e.html">http://glassfish.java.net/downloads/v2-b33e.html<br>
+    </a>ActiveMQ 4.1 : <a
+ href="http://glassfish.java.net/downloads/v2-b33e.html">http://activemq.apache.org/activemq-410-release.html<br>
+    </a></li>
+  <li>Modify the glassfish domain's (default domain is domain1)
+classpath to add ActiveMQ4.1 jars
+located in ActiveMQ installation lib directory. The asadmin GUI
+could
+be used to
+modify a domain's classpath. Open a browser and type the url of the
+application server admin GUI - http://hostname:adminport. Go to
+Application Server -&gt; JVM Settings -&gt; Path Settings . Add
+an
+entry for the jar files shown below [comma-separated as shown below] in
+the classpath suffix. Restart the application server domain for these
+changes to take
+effect.&nbsp;&nbsp;&nbsp;&nbsp;</li>
+  <ol>
+    <ol>
+      <li>activemq-core.jar</li>
+      <li>activeio.jar</li>
+      <li>commons-logging.jar</li>
+      <li>backport-util-concurrent.jar</li>
+    </ol>
+  </ol>
+  <li>&nbsp;Start the Active MQ - please refer to <a
+ href="http://activemq.apache.org/run-broker.html">http://activemq.apache.org/run-broker.html</a>&nbsp;&nbsp;
+&nbsp; <br>
+  </li>
+  <li>Create the required destinations :<a
+ href="http://activemq.apache.org/how-do-i-create-new-destinations.html">
+http://activemq.apache.org/how-do-i-create-new-destinations.htm</a><a
+ href="http://activemq.apache.org/how-do-i-create-new-destinations.html">l
+    </a>shows how destinations can be created in ActiveMQ. 2 queue
+destinations are required, "Receive" from which we will receive the
+messages and "Send" to which we will respond back from our MDB.&nbsp; </li>
+  <li>Create the jndi bindings : Create a File system JNDI object store
+to bind ActiveMQ JMS
+administered objects.&nbsp; The following link shows a code snippet
+that creates a FS
+object store and binds the required ActiveMQ objects to the jndi tree.<small><br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp; <a
+ href="http://weblogs.java.net/blog/rampsarathy/archive/Main.java">http://weblogs.java.net/blog/rampsarathy/archive/Main.java</a></small></li>
+  <li>Create the resource adapter configuration :<span
+ style="font-style: italic;"><br>
+asadmin
+create-resource-adapter-config --user &lt;adminname&gt;
+--password
+&lt;admin password&gt; --property
+SupportsXA=true:ProviderIntegrationMode=jndi:RMPolicy=OnePerPhysicalConnection:<br>
+JndiProperties=java.naming.factory.initial\\=com.sun.jndi.fscontext.RefFSContextFactory<br>
+java.naming.provider.url\\=file://space/activemqobjects:LogLevel=FINEST
+genericra</span></li>
+  <li>Deploy the resource adapter using the asadmin deploy
+command, as shown below.&nbsp;In the image above, see Generic JMS
+RA deployed in the application server.<span style="font-style: italic;">&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; $ asadmin deploy --user admin --password
+adminadmin
+&lt;location of the generic resource adapter rar file&gt;<br>
+    </span>Generic JMS RA is present in
+${GLASSFISH_HOME}/lib/addons/resourceadapters/genericjmsra/genericra.rar<span
+ style="font-style: italic;"><br>
+    </span></li>
+  <li>In order to configure a JMS Connection
+Factory, using the Generic
+Resource Adapter for JMS, a Connector connection pool and resources
+needs to be created in the application server, as shown below.<br>
+#Creates a Connection Pool called mypool and points to XAQCF created in
+Active MQ<br>
+asadmin create-connector-connection-pool --raname genericra
+connectiondefinition javax.jms.QueueConnectionFactory
+--transactionsupport&nbsp; XATransaction --property
+ConnectionFactoryJndiName=activemqconnectionfactory inpool<br>
+#Creates a Connection Pool called mypool2 and points to XATCF created
+in Active MQ<br>
+asadmin create-connector-connection-pool --raname genericra
+connectiondefinition javax.jms.QueueConnectionFactory
+--transactionsupport&nbsp; XATransaction --property
+ConnectionFactoryJndiName=activemqconnectionfactory outpool<br>
+#Creates a connector resource named jms/MyQCF and
+binds this resource to JNDI for applications to use.<br>
+asadmin create-connector-resource --poolname inpool jms/inboundXAQCF<br>
+    <span style="font-weight: bold;">Note: </span>Though the inbound
+configuration of the RA happens through the
+activation specification, a pool has to be created to make sure that
+the transaction recovery happens when the application restarts. This is
+because the transaction manager does recovery only for connector
+resources that are registered in domain.xml.<br>
+#Creates a connector resource named jms/MyTCF and
+binds this resource to JNDI for applications to use.<br>
+asadmin create-connector-resource --poolname outpool jms/outboundXAQCF</li>
+  <li>For JMS Destination Resources, an administered object needs to
+be
+created. In the image above, see jms/MyQueue [pointing to Generic JMS
+RA and TQueue] created in the application server.<br>
+#Creates a javax.jms.Queue Administered Object and binds it to
+application server's JNDI tree at
+jms/inqueue and points to inqueue created in Sonic MQ.<br>
+asadmin create-admin-object --raname genericra --restype
+javax.jms.Queue --property DestinationJndiName=Receive jms/inqueue<br>
+#Creates a javax.jms.Topic Administered Object and binds it to
+application server's JNDI tree at
+jms/MyTopic and points to outqueue created in Sonic MQ.<br>
+asadmin create-admin-object --raname genericra --restype
+javax.jms.Topic --property DestinationJndiName=Send&nbsp; jms/outqueue</li>
+  <li>Deployment descriptors:<br>
+The deployment descriptors need to take into account the resource
+adapter and the connection resources that have been created. A sample
+sun-ejb-jar.xml for a Message Driven Bean that listens to a destination
+called inqueue&nbsp; in ActiveMQ, and publishes back reply messages to
+a
+destination resource named jms/outqueue&nbsp; is available here<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; <a
+ href="http://weblogs.java.net/blog/rampsarathy/archive/sun-ejb-jar.xml">http://weblogs.java.net/blog/rampsarathy/archive/sun-ejb-jar.xml</a></li>
+  <li>The business logic encoded in Message Driven Bean could then
+lookup the
+configured QueueConnectionFactory/Destination resource to create a
+connection and reply to the received message.<small
+ style="font-style: italic;"></small>
+  </li>
+</ol>
+<span class="pagesubtitle"></span>
+<br>
+</body>
+</html>
