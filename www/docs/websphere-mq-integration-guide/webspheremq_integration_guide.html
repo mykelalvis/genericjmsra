@@ -32,11 +32,13 @@
 @page { size: 8.27in 11.69in; margin: 0.79in }
 P { margin-bottom: 0.08in }
 --></style></head>
+
 <body>
 
 
 
-<h1><a class="mozTocH1" name="mozTocId236768"></a>Integrating GlassFish Application Server with IBM Websphere MQ 6.0/7.0 using
+<h1><a class="mozTocH1" name="mozTocId236768"></a>Integrating
+Sun Java System Application Server with IBM Websphere MQ 6.0 using
 Generic Resource Adapter for JMS</h1>
 
 
@@ -65,13 +67,13 @@ integration.<br>
 
 
 
-The <a href="http://genericjmsra.java.net">Generic
+The <a href="http://genericjmsra.dev.java.net">Generic
 resource adapter for JMS</a>
 project helps in integrating messaging products with
 J2EE application servers by wrapping their JMS client library in a J2EE
 Connector Architecture 1.5 resource adapter. It has been used to
 integrate different messaging products like Tibco EMS and Sun Java
-System Message Queue with the GlassFish Application
+System Message Queue with the Sun Java System Application
 Server.&nbsp;
 In this article we would
 guide you through the steps for using the Generic Resource Adapter for
@@ -81,13 +83,15 @@ integrate IBM <br>
 
 
 <a href="www.ibm.com/software/integration/wmq/v60/">
-WebSphere MQ 6.0</a> [formerly MQ Series] with <a href="http://glassfish.java.net/">GlassFish Application Server.</a><br>
+WebSphere MQ 6.0</a> [formerly MQ Series] with <a href="http://www.sun.com/software/products/appsrvr_pe/index.xml">Sun
+Java
+System Application Server 8.2</a><br>
 
 
 <br>
 
 
-Instructions outlined in this article could also be used to integration WebSphere MQ 6.0/7.0 with <a href="http://glassfish.java.net/">Project GlassFish</a> and the <a href="http://java.sun.com/javaee/downloads/">Java EE 5 SDK preview/Sun Java System Application Server PE 9 beta</a> versions available today.<br>
+Instructions outlined in this article could also be used to integration WebSphere MQ 6.0 with <a href="https://glassfish.dev.java.net/">Project GlassFish</a> and the <a href="http://java.sun.com/javaee/downloads/">Java EE 5 SDK preview/Sun Java System Application Server PE 9 beta</a> versions available today.<br>
 
 
 
@@ -99,8 +103,8 @@ Instructions outlined in this article could also be used to integration WebSpher
 
 
 
-<!--mozToc h1 1 h2 2 h3 3 h4 4 h5 5 h6 6--><li><a href="#mozTocId236768">Integrating GlassFish
-Application Server with IBM Websphere MQ 6.0/7.0 using&nbsp;Generic
+<!--mozToc h1 1 h2 2 h3 3 h4 4 h5 5 h6 6--><li><a href="#mozTocId236768">Integrating Sun Java System
+Application Server with IBM Websphere MQ 6.0 using&nbsp;Generic
 Resource
 Adapter for JMS</a>
     
@@ -205,7 +209,7 @@ necessary. <br>
 
 
 Similarly the steps outlined below assume a successful
-installation of IBM Websphere MQ 6.0/7.0. Please refer the WebSphere MQ
+installation of IBM Websphere MQ 6.0. Please refer the WebSphere MQ
 documentation for installation details. <br>
 
 
@@ -223,7 +227,7 @@ While looking at the configuration of the resource-adapter, connector
 connection pool etc. in this article, only a handful of properties,
 relevant for this discussion is covered. Please note that all the
 resource adapter, connection factory and activationspec configuration,
-listed in the Generic RA <a href="http://genericjmsra.java.net/docs/userguide/userguide.html">user guide</a> could be used while configuring these objects.<br>
+listed in the Generic RA <a href="https://genericjmsra.dev.java.net/docs/userguide/userguide.html">user guide</a> could be used while configuring these objects.<br>
 
 
 
@@ -289,17 +293,17 @@ add the following line to it.</li>
 
 <span style="font-style: italic;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 permission javax.security.auth.PrivateCredentialPermission
-"javax.resource.spi.security.PasswordCredential * \"*\"","read";<br><br></span>
+"javax.resource.spi.security.PasswordCredential * \"*\"","read";</span><br>
 
 
 
-<ul><li><span style="font-style: italic;">&nbsp;</span><span style="font-weight: bold;">In case of&nbsp;IBM MQ 6.0</span><span style="font-style: italic;"> :</span></li>
+<ul>
 
 
 
-</ul>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; For GlassFish v2, Modify the domain's classpath to add IBM MQ 6.0 jars
+  <li>Modify the domain's classpath to add IBM MQ 6.0 jars
 located in
-IBM MQ installation lib directory. The asadmin &nbsp;GUI could be used to
+IBM MQ installation lib directory. The asadmin GUI could be used to
 modify a domain's classpath. Open a browser and type the url of the
 application server admin GUI - http://hostname:adminport. Go to
 Application Server -&gt; JVM Settings -&gt; Path Settings . Add
@@ -307,11 +311,15 @@ an
 entry for the jar files shown below&nbsp; in
 the classpath suffix. Restart the application server domain for these
 changes to take
-effect.<br><br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;For GlassFish v3, copy the given jar files to&nbsp;$AS_INSTALL/lib directory.&nbsp; <br>
+effect.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </li>
 
 
 
-<span style="font-style: italic;"><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</ul>
+
+
+
+<span style="font-style: italic;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 /opt/mqm/java/lib/com.ibm.mq.jar</span><br style="font-style: italic;">
 
 
@@ -362,15 +370,11 @@ effect.<br><br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;For GlassFish v3, copy the 
 
 
 <span style="font-style: italic;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-/opt/mqm/java/lib/CL3Nonexport.jar<br><br></span><ul><li>&nbsp;<span style="font-weight: bold;">In case of IBM MQ 7.0:</span></li></ul><span style="font-weight: bold;"></span>&nbsp;&nbsp;&nbsp;
-&nbsp;&nbsp;&nbsp; For integrating GlassFish v3 with IBM MQ 7.0, copy
-the following jar files to $AS_INSTALL/lib directory &nbsp;&nbsp;
-&nbsp;&nbsp;&nbsp; <br><br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; /opt/mqm/java/lib/com.ibm.mq.jar,       <br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; /opt/mqm/java/lib/com.ibm.mq.jms.Nojndi.jar,       	<br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; /opt/mqm/java/lib/com.ibm.mq.soap.jar,<br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;/opt/mqm/java/lib/com.ibm.mqjms.jar,       	<br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; /opt/mqm/java/lib/com.ibm.mq.jmqi.jar,       	<br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; /opt/mqm/java/lib/com.ibm.mq.commonservices.jar,       	<br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; /opt/mqm/java/lib/dhbcore.jar,       	<br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; /opt/mqm/java/lib/rmm.jar,       	<br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; /opt/mqm/java/lib/providerutil.jar,      	<br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; /opt/mqm/java/lib/CL3Export.jar,       	<br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; /opt/mqm/java/lib/CL3Nonexport.jar<br><br>&nbsp;&nbsp;&nbsp;
-&nbsp;&nbsp;&nbsp; Also,&nbsp;genericra.jar file should be available at
-$AS_INSTALL/lib/addons/resourceadapters/genericjmsra/<span style="font-family: monospace;"><br></span><ul><li><span style="font-style: italic;">Note: If you are using windows, the path separator for the jar files should be
+/opt/mqm/java/lib/CL3Nonexport.jar<br><br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;
+Note: If you are using windows, the path separator for the jar files should be
 ";" and if you are using *nix it should be ":". Please verify if the changes have
 been updated correctly in domain.xml under the element
-jvm-options-&gt;classpath-suffix&nbsp;</span></li></ul>
+jvm-options-&gt;classpath-suffix&nbsp;<br></span>
 <ul>
 
 
@@ -1162,7 +1166,7 @@ Deployment descriptors</h2>
 
 
 The sample deployment descriptor below assumes the application
-described in the <a href="http://genericjmsra.java.net/docs/tibco-genericjmsra-integration-sample-doc/Integrating_Sun_Java_System_Application_Server_with_Tibco_JMS_using_the_Generic_Resource_Adapter_for_JMS.html">Tibco
+described in the <a href="https://genericjmsra.dev.java.net/docs/tibco-genericjmsra-integration-sample-doc/Integrating_Sun_Java_System_Application_Server_with_Tibco_JMS_using_the_Generic_Resource_Adapter_for_JMS.html">Tibco
 EMS integration how to guide available</a> in the genericjmsra
 java.net communite page.<br>
 
@@ -1574,7 +1578,7 @@ download/documentation</li>
 
 
 
-    <li>Community Page <a href="http://genericjmsra.java.net">http://genericjmsra.java.net</a></li>
+    <li>Community Page <a href="https://genericjmsra.dev.java.net">https://genericjmsra.dev.java.net</a></li>
 
 
 
@@ -1600,7 +1604,7 @@ Adapter for JMS user guide</span></li>
 
 
 
-    <li><span class="pagesubtitle"><a href="http://genericjmsra.java.net/docs/userguide/userguide.html">http://genericjmsra.java.net/docs/userguide/userguide.html</a></span></li>
+    <li><span class="pagesubtitle"><a href="https://genericjmsra.dev.java.net/docs/userguide/userguide.html">https://genericjmsra.dev.java.net/docs/userguide/userguide.html</a></span></li>
 
 
 
@@ -1663,7 +1667,7 @@ from Sun at <a href="http://java.sun.com/j2ee/1.4/download.html">http://java.sun
   <ul>
 
 
-    <li><a href="http://glassfish.java.net">http://glassfish.java.net</a></li>
+    <li><a href="http://glassfish.dev.java.net">http://glassfish.dev.java.net</a></li>
 
 
   
@@ -1712,7 +1716,7 @@ Generic Resource Adapter for JMS user guide.</span></li>
 
 
 
-    <li><span class="pagesubtitle"><a href="http://genericjmsra.java.net/issues/show_bug.cgi?id=5">http://genericjmsra.java.net/issues/show_bug.cgi?id=5</a></span></li>
+    <li><span class="pagesubtitle"><a href="https://genericjmsra.dev.java.net/issues/show_bug.cgi?id=5">https://genericjmsra.dev.java.net/issues/show_bug.cgi?id=5</a></span></li>
 
 
 
